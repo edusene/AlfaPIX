@@ -4,33 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81f9a42e-ac04-4b23-bcea-2094fc17d96c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Alfa PIX.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/certificado.pem" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/chave.pem" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sicoob/pix.py" beforeDir="false" afterPath="$PROJECT_DIR$/sicoob/pix.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sicoob/qrcode_pix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sicoob/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/.dockerignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/Procfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/como usar.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/config_webhook.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/consulta_webhook.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/webhook/fly.toml" beforeDir="false" />
-    </list>
+    <list default="true" id="81f9a42e-ac04-4b23-bcea-2094fc17d96c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -200,6 +174,7 @@
       <workItem from="1747457025281" duration="2160000" />
       <workItem from="1747459309265" duration="1342000" />
       <workItem from="1747461179780" duration="50000" />
+      <workItem from="1747461519130" duration="122000" />
     </task>
     <servers />
   </component>
