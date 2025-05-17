@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>alfaPIX - Pagamento via Pix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            color: #0077cc;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            animation: fadeIn 0.6s ease;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100px;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: #0077cc;
+            outline: none;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #0077cc;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        #cancelar-btn {
+            background-color: #e74c3c;
+        }
+
+        #cancelar-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #resultado {
+            margin-top: 30px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        #qrcode {
+            max-width: 220px;
+            border: 8px solid white;
+            box-shadow: 0 0 12px rgba(0,0,0,0.15);
+            border-radius: 12px;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .alert {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Notificação pop-up estilo toast */
+        #notificacao-pagamento {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745; /* verde */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 9999;
+        }
+
+        #notificacao-pagamento.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>alfaPIX</h1>
+
+    <form id="form-cobrar">
+        <label>Valor (R$):</label>
+        <input type="number" name="valor" step="0.01" required />
+        <button type="submit">Gerar cobrança</button>
+    </form>
+
+    <div id="resultado" style="display:none;">
+        <h3>QR Code:</h3>
+        <img id="qrcode" src="" alt="QR Code Pix" />
+        <input type="hidden" id="txid" />
+        <br /><br />
+        <button id="verificar-btn">Verificar pagamento</button>
+        <button id="cancelar-btn" style="margin-left: 10px;">Nova cobrança</button>
+        <p id="status"></p>
+    </div>
+
+    <div id="alerta"></div>
+
+    <!-- Notificação visual -->
+    <div id="notificacao-pagamento">✅ Pagamento confirmado!</div>
+
+    <script>
+        let intervalo;
+
+        $('#form-cobrar').on('submit', function(e) {
+            e.preventDefault();
+            $('#alerta').html('');
+
+            $.post('/cobrar', $(this).serialize(), function(data) {
+                if (data.qrcode && data.txid) {
+                    $('#qrcode').attr('src', data.qrcode);
+                    $('#txid').val(data.txid);
+                    $('#resultado').fadeIn();
+                    $('#status').text('Aguardando pagamento...');
+                    mostrarAlerta('Cobrança criada com sucesso.', 'success');
+
+                    // inicia verificação automática
+                    if (intervalo) clearInterval(intervalo);
+                    intervalo = setInterval(verificarPagamento, 5000);
+                } else {
+                    mostrarAlerta('Erro ao gerar cobrança. Tente novamente.', 'error');
+                }
+            }).fail(function(err) {
+                mostrarAlerta('Erro ao se comunicar com o servidor.', 'error');
+            });
+        });
+
+        function mostrarNotificacao(msg) {
+            const notif = $('#notificacao-pagamento');
+            notif.text(msg).addClass('show');
+
+            // Some após 4 segundos
+            setTimeout(() => {
+                notif.removeClass('show');
+            }, 4000);
+        }
+
+        function verificarPagamento() {
+            const txid = $('#txid').val();
+            $.post('/verificar', { txid: txid }, function(data) {
+                const statusMap = {
+                    'ATIVA': 'Aguardando pagamento',
+                    'CONCLUIDA': 'Pagamento recebido com sucesso',
+                    'REMOVIDA_PELO_USUARIO_RECEBEDOR': 'Cobrança cancelada',
+                    'EXPIRADA': 'Cobrança expirada',
+                };
+                const statusTexto = statusMap[data.status] || data.status;
+                $('#status').text('Status do pagamento: ' + statusTexto);
+
+                if (data.status === 'CONCLUIDA') {
+                    clearInterval(intervalo);
+                    mostrarAlerta('✅ Pagamento confirmado!', 'success');
+                    mostrarNotificacao('✅ Pagamento confirmado!');
+                } else if (data.status === 'EXPIRADA') {
+                    clearInterval(intervalo);
+                    mostrarAlerta('⚠️ Cobrança expirada.', 'error');
+                }
+            }).fail(function() {
+                mostrarAlerta('Erro ao verificar o status do pagamento.', 'error');
+            });
+        }
+
+        $('#verificar-btn').on('click', verificarPagamento);
+
+        $('#cancelar-btn').on('click', function () {
+            const status = $('#status').text();
+            // Se o status já indicar pagamento concluído, apenas reseta sem confirmação
+            if (status.includes('Pagamento recebido com sucesso') || status.includes('✅ Pagamento confirmado!')) {
+                clearInterval(intervalo);
+                $('#resultado').fadeOut(function() {
+                    $('#form-cobrar')[0].reset();
+                    $('#txid').val('');
+                    $('#status').text('');
+                    $('#alerta').html('');
+                });
+            } else {
+                // Se o pagamento ainda não confirmado, pede confirmação para cancelar
+                if (confirm("Tem certeza de que deseja iniciar uma nova cobrança? A cobrança atual será cancelada.")) {
+                    clearInterval(intervalo);
+                    $('#resultado').fadeOut(function() {
+                        $('#form-cobrar')[0].reset();
+                        $('#txid').val('');
+                        $('#status').text('');
+                        $('#alerta').html('');
+                    });
+                }
+            }
+        });
+
+        function mostrarAlerta(msg, tipo) {
+            $('#alerta').html(`<div class="alert ${tipo}">${msg}</div>`);
+        }
+    </script>
+
+</body>
+</html>
