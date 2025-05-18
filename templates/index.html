@@ -140,13 +140,24 @@
 
     #historico-pix li {
       background: #f9f9f9;
-      padding: 8px;
+      padding: 12px;
       margin-bottom: 8px;
       border-radius: 6px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+    }
+
+    #historico-pix li span {
+      font-weight: bold;
+      color: #333;
+    }
+
+    #historico-pix li small {
+      font-size: 0.85em;
+      color: #777;
     }
 
     #limpar-lista {
@@ -166,15 +177,6 @@
 
     .btn-pulse {
       animation: pulse 1s infinite;
-    }
-
-    /* Transições para fade-in/fade-out */
-    #qrcode, #verificar-btn, #status {
-      transition: opacity 0.5s ease-in-out;
-    }
-
-    #cancelar-btn {
-      transition: opacity 0.5s ease-in-out;
     }
 
     /* Estilo para nova cobrança com animação */
@@ -225,6 +227,7 @@
 </audio>
 
 <script>
+// Javascript para a funcionalidade
 let intervalo;
 let historicoPagamentos = JSON.parse(localStorage.getItem('historicoPagamentos')) || [];
 
@@ -234,7 +237,12 @@ function atualizarListaPagamentos() {
 
   if (historicoPagamentos.length > 0) {
     historicoPagamentos.forEach(p => {
-      lista.append(`<li><span>✅ R$ ${parseFloat(p.valor).toFixed(2)}</span> <small>${p.dataHora}</small></li>`);
+      lista.append(`
+        <li>
+          <span>✅ ${p.nome} - R$ ${parseFloat(p.valor).toFixed(2)}</span>
+          <small>${p.dataHora}</small>
+        </li>
+      `);
     });
   } else {
     lista.append('<li style="text-align:center; color: #888;">Nenhum pagamento registrado ainda.</li>');
@@ -253,7 +261,7 @@ $('#form-cobrar').on('submit', function(e) {
   $('#alerta').html('');
   $('#qrcode').show();
   $('#verificar-btn').show();
-  $('#cancelar-btn').text('Cancelar').show();
+  $('#cancelar-btn').text('Cancelar').removeClass('btn-verde btn-pulse').addClass('btn-vermelho').show();
 
   $.post('/cobrar', $(this).serialize(), function(data) {
     if (data.qrcode && data.txid) {
@@ -288,31 +296,34 @@ function verificarPagamento() {
       clearInterval(intervalo);
       mostrarNotificacao('✅ Pagamento confirmado!');
       mostrarAlerta('✅ Pagamento confirmado!', 'success');
-      document.getElementById('som-confirmacao').play().catch(err => {
-        console.warn('Som bloqueado pelo navegador. Usuário precisa interagir com a página.');
-      });
+      document.getElementById('som-confirmacao').play().catch(() => {});
+
+      let nomePagador = data.nome_pagador || 'Pagador não identificado';
+      let cpfPagador = data.cpf_pagador || 'CPF não informado';
+      let valorPago = data.valor_pago || 'Valor não informado';
+      let horarioPagamento = data.horario_pagamento || 'Horário não informado';
+
+      $('#status').text(`Pagamento confirmado! Pagador: ${nomePagador} | Valor: R$ ${valorPago} | CPF: ${cpfPagador} | Horário: ${horarioPagamento}`);
 
       const valor = $('input[name="valor"]').val();
       const dataHora = new Date().toLocaleString();
-      historicoPagamentos.push({ valor, dataHora });
+
+      historicoPagamentos.push({ nome: nomePagador, valor, dataHora });
       salvarHistorico();
       atualizarListaPagamentos();
 
-      // Adicionando animação para transição
-      $('#titulo-qrcode').fadeOut(500); // Fade out do título do QR Code
-      $('#qrcode').fadeOut(500);        // Fade out do QR Code
-      $('#verificar-btn').fadeOut(500); // Fade out do botão de verificação
-      $('#status').fadeOut(500);        // Fade out do status
+      $('#titulo-qrcode').fadeOut(500);
+      $('#qrcode').fadeOut(500);
+      $('#verificar-btn').fadeOut(500);
+      $('#status').fadeOut(500);
 
-      // Exibir o botão de "Nova Cobrança"
       setTimeout(() => {
         $('#cancelar-btn')
           .removeClass('btn-vermelho')
           .addClass('btn-verde btn-pulse')
           .text('🔄 Nova cobrança')
-          .fadeIn(500) // Fade-in do botão de Nova Cobrança
-          .addClass('show'); // Adiciona a classe 'show' para mostrar o botão
-      }, 500); // Atraso para o efeito de transição
+          .fadeIn(500);
+      }, 500);
     }
   }).fail(() => {
     mostrarAlerta('Erro ao verificar pagamento.', 'error');
@@ -320,15 +331,13 @@ function verificarPagamento() {
 }
 
 $('#cancelar-btn').on('click', function () {
-  // Animação de transição de volta para o estado inicial
   $('#resultado').fadeOut(500, function() {
-    // Após o fade-out, resetar o formulário e ocultar a confirmação
     $('#form-cobrar')[0].reset();
     $('#alerta').html('');
     $('#qrcode').attr('src', '').hide();
     $('#status').text('');
     $('#cancelar-btn').removeClass('btn-verde btn-pulse').addClass('btn-vermelho').text('Cancelar').hide();
-    $('#form-cobrar').fadeIn(500); // Fade-in para o formulário de novo pedido
+    $('#form-cobrar').fadeIn(500);
   });
   atualizarListaPagamentos();
 });
