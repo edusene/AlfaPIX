@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <title>alfaPIX - Pagamento via Pix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Ícones para navegadores e dispositivos móveis -->
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicons/favicon-512x512.png') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+  <!-- Cor da barra de status no Android -->
+  <meta name="theme-color" content="#0077cc">
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     /* CSS Atualizado com Animação */
@@ -190,17 +202,42 @@
       opacity: 1;
       visibility: visible;
     }
+   .logo-principal {
+  width: 70%;  /* Logo ainda ocupa 70% da largura */
+  max-width: 280px;  /* Logo não ultrapassa 280px de largura */
+  height: auto;
+  margin-top: -30px;  /* Move a logo mais para cima */
+  margin-bottom: -30px;  /* Move a logo mais para baixo */
+  margin-left: -40px;  /* Move a logo mais para a esquerda */
+  margin-right: -40px;  /* Move a logo mais para a direita */
+}
+
+/* Media query para dispositivos móveis */
+@media (max-width: 768px) {
+  .logo-principal {
+    width: 60%;  /* Logo ocupa 60% da largura em dispositivos móveis */
+    max-width: 240px;  /* Ajusta o tamanho máximo da logo para dispositivos móveis */
+    margin-top: -20px;  /* Move um pouco para cima */
+    margin-bottom: -20px;  /* Move um pouco para baixo */
+    margin-left: -30px;  /* Move a logo para a esquerda */
+    margin-right: -30px;  /* Move a logo para a direita */
+  }
+}
+
   </style>
 </head>
 <body>
 
-<h1>alfaPIX</h1>
+  <img src="{{ url_for('static', filename='images/logo.png') }}" alt="alfaPIX" class="logo-principal" />
+  <h1 style="position: absolute; left: -9999px;">alfaPIX</h1>
 
-<form id="form-cobrar">
-  <label>Valor (R$):</label>
-  <input type="number" name="valor" step="0.01" required />
-  <button type="submit" class="btn-azul">Gerar cobrança</button>
-</form>
+
+  <form id="form-cobrar">
+    <label>Valor (R$):</label>
+    <input type="number" name="valor" step="0.01" required />
+    <button type="submit" class="btn-azul">Gerar cobrança</button>
+  </form>
+
 
 <div id="resultado">
   <h3 id="titulo-qrcode">QR Code:</h3>
