@@ -1,0 +1,259 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  color: #0077cc;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  animation: slideIn 1s ease-out;
+}
+
+form {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  animation: fadeIn 1s ease;
+}
+
+input[type="number"] {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 120px;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-3px);
+}
+
+.btn-azul { background-color: #0077cc; }
+.btn-verde { background-color: #28a745; }
+.btn-vermelho { background-color: #e74c3c; }
+.btn-cinza { background-color: #6c757d; }
+
+.btn-azul:hover { background-color: #005fa3; }
+.btn-verde:hover { background-color: #218838; }
+.btn-vermelho:hover { background-color: #c0392b; }
+.btn-cinza:hover { background-color: #5a6268; }
+
+#resultado {
+  margin-top: 30px;
+  text-align: center;
+  display: none;
+}
+
+#qrcode {
+  max-width: 220px;
+  border: 8px solid white;
+  box-shadow: 0 0 12px rgba(0,0,0,0.15);
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+#qrcode:hover {
+  transform: scale(1.1);
+}
+
+#status {
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+#alerta {
+  margin-top: 15px;
+}
+
+.alert {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeAlert 1s forwards;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+#notificacao-pagamento {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #28a745;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  z-index: 9999;
+}
+
+#notificacao-pagamento.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(20px); /* Ajuste no transform para garantir a centralização */
+}
+
+#lista-pix {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid #0077cc;
+}
+
+#lista-pix h3 {
+  text-align: center;
+  color: #0077cc;
+  margin-bottom: 10px;
+}
+
+#historico-pix {
+  list-style: none;
+  padding: 0;
+}
+
+#historico-pix li {
+  background: #f9f9f9;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  opacity: 0;
+  animation: slideUp 0.5s forwards;
+}
+
+#historico-pix li span {
+  font-weight: bold;
+  color: #333;
+}
+
+#historico-pix li small {
+  font-size: 0.85em;
+  color: #777;
+}
+
+#limpar-lista {
+  margin-top: 10px;
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeAlert {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.btn-pulse {
+  animation: pulse 1s infinite;
+}
+
+.logo-principal {
+  width: 70%;
+  max-width: 280px;
+  height: auto;
+  margin: -30px -40px;
+  animation: fadeInLogo 1s ease-out;  /* Animação mais rápida */
+}
+
+@keyframes fadeInLogo {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-principal {
+    width: 60%;
+    max-width: 240px;
+    margin: -20px -30px;
+  }
+}

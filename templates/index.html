@@ -5,232 +5,19 @@
   <title>alfaPIX - Pagamento via Pix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Ícones para navegadores e dispositivos móveis -->
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+  <!-- Ícones -->
   <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
-  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}">
-  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicons/favicon-512x512.png') }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
-  <!-- Cor da barra de status no Android -->
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
   <meta name="theme-color" content="#0077cc">
 
+  <!-- Estilos e jQuery -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    /* CSS Atualizado com Animação */
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f7fa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      color: #0077cc;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    form {
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.08);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    input[type="number"] {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 120px;
-    }
-
-    button {
-      padding: 8px 16px;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn-azul { background-color: #0077cc; }
-    .btn-verde { background-color: #28a745; }
-    .btn-vermelho { background-color: #e74c3c; }
-    .btn-cinza { background-color: #6c757d; }
-
-    #resultado {
-      margin-top: 30px;
-      text-align: center;
-      display: none;
-    }
-
-    #qrcode {
-      max-width: 220px;
-      border: 8px solid white;
-      box-shadow: 0 0 12px rgba(0,0,0,0.15);
-      border-radius: 12px;
-    }
-
-    #status {
-      font-weight: bold;
-      margin-top: 15px;
-    }
-
-    #alerta {
-      margin-top: 15px;
-    }
-
-    .alert {
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
-
-    #notificacao-pagamento {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #28a745;
-      color: white;
-      padding: 15px 30px;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-      z-index: 9999;
-    }
-
-    #notificacao-pagamento.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    #lista-pix {
-      margin-top: 20px;
-      width: 100%;
-      max-width: 400px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      border: 2px solid #0077cc;
-    }
-
-    #lista-pix h3 {
-      text-align: center;
-      color: #0077cc;
-      margin-bottom: 10px;
-    }
-
-    #historico-pix {
-      list-style: none;
-      padding: 0;
-    }
-
-    #historico-pix li {
-      background: #f9f9f9;
-      padding: 12px;
-      margin-bottom: 8px;
-      border-radius: 6px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      align-items: flex-start;
-    }
-
-    #historico-pix li span {
-      font-weight: bold;
-      color: #333;
-    }
-
-    #historico-pix li small {
-      font-size: 0.85em;
-      color: #777;
-    }
-
-    #limpar-lista {
-      margin-top: 10px;
-      display: block;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    /* Animação no botão de "Nova cobrança" */
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-
-    .btn-pulse {
-      animation: pulse 1s infinite;
-    }
-
-    /* Estilo para nova cobrança com animação */
-    #nova-cobranca {
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-    }
-
-    #nova-cobranca.show {
-      opacity: 1;
-      visibility: visible;
-    }
-   .logo-principal {
-  width: 70%;  /* Logo ainda ocupa 70% da largura */
-  max-width: 280px;  /* Logo não ultrapassa 280px de largura */
-  height: auto;
-  margin-top: -30px;  /* Move a logo mais para cima */
-  margin-bottom: -30px;  /* Move a logo mais para baixo */
-  margin-left: -40px;  /* Move a logo mais para a esquerda */
-  margin-right: -40px;  /* Move a logo mais para a direita */
-}
-
-/* Media query para dispositivos móveis */
-@media (max-width: 768px) {
-  .logo-principal {
-    width: 60%;  /* Logo ocupa 60% da largura em dispositivos móveis */
-    max-width: 240px;  /* Ajusta o tamanho máximo da logo para dispositivos móveis */
-    margin-top: -20px;  /* Move um pouco para cima */
-    margin-bottom: -20px;  /* Move um pouco para baixo */
-    margin-left: -30px;  /* Move a logo para a esquerda */
-    margin-right: -30px;  /* Move a logo para a direita */
-  }
-}
-
-  </style>
 </head>
 <body>
 
   <img src="{{ url_for('static', filename='images/logo.png') }}" alt="alfaPIX" class="logo-principal" />
   <h1 style="position: absolute; left: -9999px;">alfaPIX</h1>
-
 
   <form id="form-cobrar">
     <label>Valor (R$):</label>
@@ -238,169 +25,30 @@
     <button type="submit" class="btn-azul">Gerar cobrança</button>
   </form>
 
+  <div id="resultado" aria-live="polite">
+    <h3 id="titulo-qrcode">QR Code:</h3>
+    <img id="qrcode" src="" alt="QR Code Pix" />
+    <input type="hidden" id="txid" />
+    <br /><br />
+    <button id="verificar-btn" class="btn-azul">Verificar pagamento</button>
+    <button id="cancelar-btn" class="btn-vermelho">Cancelar</button>
+    <p id="status"></p>
+  </div>
 
-<div id="resultado">
-  <h3 id="titulo-qrcode">QR Code:</h3>
-  <img id="qrcode" src="" alt="QR Code Pix" />
-  <input type="hidden" id="txid" />
-  <br /><br />
-  <button id="verificar-btn" class="btn-azul">Verificar pagamento</button>
-  <button id="cancelar-btn" class="btn-vermelho">Cancelar</button>
-  <p id="status"></p>
-</div>
+  <div id="lista-pix">
+    <h3>📥 Pagamentos Recebidos</h3>
+    <ul id="historico-pix"></ul>
+  </div>
 
-<div id="lista-pix">
-  <h3>📥 Pagamentos Recebidos</h3>
-  <ul id="historico-pix"></ul>
-</div>
+  <button id="limpar-lista" class="btn-cinza">🗑️ Limpar Lista</button>
+  <div id="alerta"></div>
 
-<button id="limpar-lista" class="btn-cinza">🗑️ Limpar Lista</button>
+  <div id="notificacao-pagamento">✅ Pagamento confirmado!</div>
 
-<div id="alerta"></div>
-<div id="notificacao-pagamento">✅ Pagamento confirmado!</div>
+  <audio id="som-confirmacao" preload="auto">
+    <source src="{{ url_for('static', filename='audio/confirmacao.mp3') }}" type="audio/mpeg">
+  </audio>
 
-<audio id="som-confirmacao" preload="auto">
-  <source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_2f95719a29.mp3?filename=correct-2-46134.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-// Javascript para a funcionalidade
-let intervalo;
-let historicoPagamentos = JSON.parse(localStorage.getItem('historicoPagamentos')) || [];
-
-function atualizarListaPagamentos() {
-  const lista = $('#historico-pix');
-  lista.empty();
-
-  if (historicoPagamentos.length > 0) {
-    historicoPagamentos.forEach(p => {
-      lista.append(`
-        <li>
-          <span>✅ ${p.nome} - R$ ${parseFloat(p.valor).toFixed(2)}</span>
-          <small>${p.dataHora}</small>
-        </li>
-      `);
-    });
-  } else {
-    lista.append('<li style="text-align:center; color: #888;">Nenhum pagamento registrado ainda.</li>');
-  }
-
-  $('#lista-pix').fadeIn();
-  $('#limpar-lista').show();
-}
-
-function salvarHistorico() {
-  localStorage.setItem('historicoPagamentos', JSON.stringify(historicoPagamentos));
-}
-
-$('#form-cobrar').on('submit', function(e) {
-  e.preventDefault();
-  $('#alerta').html('');
-  $('#qrcode').show();
-  $('#verificar-btn').show();
-  $('#cancelar-btn').text('Cancelar').removeClass('btn-verde btn-pulse').addClass('btn-vermelho').show();
-
-  $.post('/cobrar', $(this).serialize(), function(data) {
-    if (data.qrcode && data.txid) {
-      $('#qrcode').attr('src', data.qrcode);
-      $('#txid').val(data.txid);
-      $('#resultado').fadeIn();
-      $('#status').text('Aguardando pagamento...');
-
-      if (intervalo) clearInterval(intervalo);
-      intervalo = setInterval(verificarPagamento, 5000);
-    } else {
-      mostrarAlerta('Erro ao gerar cobrança.', 'error');
-    }
-  }).fail(() => {
-    mostrarAlerta('Erro na comunicação com o servidor.', 'error');
-  });
-});
-
-function verificarPagamento() {
-  const txid = $('#txid').val();
-  $.post('/verificar', { txid }, function(data) {
-    const statusMap = {
-      'ATIVA': 'Aguardando pagamento',
-      'CONCLUIDA': 'Pagamento recebido com sucesso',
-      'REMOVIDA_PELO_USUARIO_RECEBEDOR': 'Cobrança cancelada',
-      'EXPIRADA': 'Cobrança expirada',
-    };
-    const statusTexto = statusMap[data.status] || data.status;
-    $('#status').text('Status: ' + statusTexto);
-
-    if (data.status === 'CONCLUIDA') {
-      clearInterval(intervalo);
-      mostrarNotificacao('✅ Pagamento confirmado!');
-      mostrarAlerta('✅ Pagamento confirmado!', 'success');
-      document.getElementById('som-confirmacao').play().catch(() => {});
-
-      let nomePagador = data.nome_pagador || 'Pagador não identificado';
-      let cpfPagador = data.cpf_pagador || 'CPF não informado';
-      let valorPago = data.valor_pago || 'Valor não informado';
-      let horarioPagamento = data.horario_pagamento || 'Horário não informado';
-
-      $('#status').text(`Pagamento confirmado! Pagador: ${nomePagador} | Valor: R$ ${valorPago} | CPF: ${cpfPagador} | Horário: ${horarioPagamento}`);
-
-      const valor = $('input[name="valor"]').val();
-      const dataHora = new Date().toLocaleString();
-
-      historicoPagamentos.push({ nome: nomePagador, valor, dataHora });
-      salvarHistorico();
-      atualizarListaPagamentos();
-
-      $('#titulo-qrcode').fadeOut(500);
-      $('#qrcode').fadeOut(500);
-      $('#verificar-btn').fadeOut(500);
-      $('#status').fadeOut(500);
-
-      setTimeout(() => {
-        $('#cancelar-btn')
-          .removeClass('btn-vermelho')
-          .addClass('btn-verde btn-pulse')
-          .text('🔄 Nova cobrança')
-          .fadeIn(500);
-      }, 500);
-    }
-  }).fail(() => {
-    mostrarAlerta('Erro ao verificar pagamento.', 'error');
-  });
-}
-
-$('#cancelar-btn').on('click', function () {
-  $('#resultado').fadeOut(500, function() {
-    $('#form-cobrar')[0].reset();
-    $('#alerta').html('');
-    $('#qrcode').attr('src', '').hide();
-    $('#status').text('');
-    $('#cancelar-btn').removeClass('btn-verde btn-pulse').addClass('btn-vermelho').text('Cancelar').hide();
-    $('#form-cobrar').fadeIn(500);
-  });
-  atualizarListaPagamentos();
-});
-
-$('#limpar-lista').on('click', function () {
-  if (confirm("Deseja limpar todo o histórico de pagamentos?")) {
-    historicoPagamentos = [];
-    salvarHistorico();
-    atualizarListaPagamentos();
-  }
-});
-
-function mostrarAlerta(msg, tipo) {
-  $('#alerta').html(`<div class="alert ${tipo}">${msg}</div>`);
-}
-
-function mostrarNotificacao(msg) {
-  const notif = $('#notificacao-pagamento');
-  notif.text(msg).addClass('show');
-  setTimeout(() => notif.removeClass('show'), 4000);
-}
-
-// Inicializa lista ao carregar
-$(document).ready(() => {
-  atualizarListaPagamentos();
-});
-</script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
-</html>
+</html> 
