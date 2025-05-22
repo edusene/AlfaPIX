@@ -1,1 +1,2 @@
 *.pem
+echo ".env" >> .gitignore

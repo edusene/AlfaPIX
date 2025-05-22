@@ -8,8 +8,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
-
+    return render_template('index.html', 
+                           SUPABASE_URL=SUPABASE_URL, 
+                           SUPABASE_ANON_KEY=SUPABASE_ANON_KEY)
 
 @app.route('/cobrar', methods=['POST'])
 def cobrar():

@@ -1,13 +1,30 @@
 let intervalo;
 let pagamentoConcluido = false;
 
-// -------------------- HISTÓRICO --------------------
+// -------------------- ALERTAS E NOTIFICAÇÕES --------------------
 
-async function carregarHistorico() {
-  const { data, error } = await supabase
+function mostrarAlerta(msg, tipo) {
+  $('#alerta').html(`<div class="alert ${tipo}">${msg}</div>`);
+}
+
+function mostrarNotificacao(msg) {
+  const notif = $('#notificacao-pagamento');
+  notif.text(msg).addClass('show');
+  setTimeout(() => notif.removeClass('show'), 4000);
+}
+
+// -------------------- CARREGAR HISTÓRICO --------------------
+
+async function carregarHistorico(inicio = null, fim = null) {
+  let query = supabase
     .from('historico_pagamentos')
     .select('*')
     .order('dataHora', { ascending: false });
+
+  if (inicio) query = query.gte('dataHora', inicio);
+  if (fim) query = query.lte('dataHora', fim);
+
+  const { data, error } = await query;
 
   const lista = $('#historico-pix');
   lista.empty();
@@ -28,12 +45,11 @@ async function carregarHistorico() {
       `);
     });
   } else {
-    lista.append('<li style="text-align:center; color:#888;">Nenhum pagamento registrado ainda.</li>');
+    lista.append('<li style="text-align:center; color:#888;">Nenhum pagamento registrado neste período.</li>');
   }
-
-  $('#lista-pix').fadeIn();
-  $('#limpar-lista').show();
 }
+
+// -------------------- SALVAR NO HISTÓRICO --------------------
 
 async function salvarNoHistorico(nome, valor) {
   const { error } = await supabase
@@ -48,7 +64,7 @@ async function salvarNoHistorico(nome, valor) {
   }
 }
 
-// -------------------- VERIFICAÇÃO --------------------
+// -------------------- VERIFICAR PAGAMENTO --------------------
 
 function verificarPagamento() {
   const txid = $('#txid').val();
@@ -103,7 +119,7 @@ function verificarPagamento() {
   });
 }
 
-// -------------------- RESET --------------------
+// -------------------- RESET FORMULÁRIO --------------------
 
 function resetFormulario() {
   clearInterval(intervalo);
@@ -124,53 +140,25 @@ function resetFormulario() {
   pagamentoConcluido = false;
 }
 
-// -------------------- BOTÃO CANCELAR --------------------
-
-$(document).on('click', '#cancelar-btn', function () {
-  if (pagamentoConcluido) {
-    resetFormulario();
-  } else {
-    const confirmar = confirm("Você tem certeza que deseja cancelar a cobrança?");
-    if (confirmar) {
-      clearInterval(intervalo);
-      resetFormulario();
-    }
-  }
-});
-
-// -------------------- OCULTAR/VIZUALIZAR HISTÓRICO --------------------
-
-$(document).ready(function() {
-  $('#ocultar-lista').on('click', function () {
-    $('#lista-pix').addClass('escondido');
-    $('#ocultar-lista').hide();
-    $('#visualizar-lista').show();
-  });
-
-  $('#visualizar-lista').on('click', function () {
-    $('#lista-pix').removeClass('escondido');
-    $('#visualizar-lista').hide();
-    $('#ocultar-lista').show();
-  });
-});
-
-// -------------------- ALERTAS E NOTIFICAÇÕES --------------------
-
-function mostrarAlerta(msg, tipo) {
-  $('#alerta').html(`<div class="alert ${tipo}">${msg}</div>`);
-}
-
-function mostrarNotificacao(msg) {
-  const notif = $('#notificacao-pagamento');
-  notif.text(msg).addClass('show');
-  setTimeout(() => notif.removeClass('show'), 4000);
-}
-
-// -------------------- FORM COBRAR --------------------
+// -------------------- CÓDIGO PRINCIPAL --------------------
 
 $(document).ready(function () {
-  carregarHistorico();
 
+// Estado inicial
+$('#lista-pix').addClass('escondido');
+$('#ocultar-lista').hide();
+$('#visualizar-lista').show();
+$('#abrir-filtro').hide(); // 🔥 Esconde o botão de filtro inicialmente
+
+  // Configurar datas para hoje (início e fim)
+  const hoje = new Date().toISOString().split('T')[0];
+  const inicioISO = new Date(hoje + "T00:00:00").toISOString();
+  const fimISO = new Date(hoje + "T23:59:59").toISOString();
+
+  // Carregar histórico inicial com filtro do dia
+  carregarHistorico(inicioISO, fimISO);
+
+  // FORMULÁRIO - Gerar cobrança
   $('#form-cobrar').on('submit', function (e) {
     e.preventDefault();
 
@@ -206,4 +194,69 @@ $(document).ready(function () {
       mostrarAlerta('Erro na comunicação com o servidor.', 'error');
     });
   });
+
+  // BOTÃO CANCELAR
+  $(document).on('click', '#cancelar-btn', function () {
+    if (pagamentoConcluido) {
+      resetFormulario();
+    } else {
+      const confirmar = confirm("Você tem certeza que deseja cancelar a cobrança?");
+      if (confirmar) {
+        clearInterval(intervalo);
+        resetFormulario();
+      }
+    }
+  });
+
+  // BOTÕES OCULTAR / VISUALIZAR LISTA
+$('#ocultar-lista').on('click', function () {
+  $('#lista-pix').addClass('escondido');
+  $('#ocultar-lista').hide();
+  $('#visualizar-lista').show();
+  $('#abrir-filtro').hide(); // esconde o botão filtrar
+});
+
+$('#visualizar-lista').on('click', function () {
+  $('#lista-pix').removeClass('escondido');
+  $('#visualizar-lista').hide();
+  $('#ocultar-lista').show();
+  $('#abrir-filtro').show(); // mostra o botão filtrar
+});
+
+
+  // BOTÃO ABRIR FILTRO
+  $('#abrir-filtro').on('click', function () {
+    $('#filtro-datas').removeClass('escondido');
+    $('#abrir-filtro').hide();
+  });
+
+  // BOTÃO APLICAR FILTRO (aplica filtro, não oculta)
+  $('#aplicar-filtro').on('click', function () {
+    const dataInicio = $('#data-inicio').val();
+    const dataFim = $('#data-fim').val();
+
+    if (!dataInicio || !dataFim) {
+      mostrarAlerta('Preencha as duas datas para aplicar o filtro.', 'error');
+      return;
+    }
+
+    const inicioFiltro = new Date(dataInicio + "T00:00:00").toISOString();
+    const fimFiltro = new Date(dataFim + "T23:59:59").toISOString();
+
+    carregarHistorico(inicioFiltro, fimFiltro);
+  });
+
+  // BOTÃO CANCELAR FILTRO (limpa, oculta filtro e recarrega histórico do dia)
+  $('#cancelar-filtro').on('click', function () {
+    $('#data-inicio').val('');
+    $('#data-fim').val('');
+
+    carregarHistorico(inicioISO, fimISO);
+
+    $('#filtro-datas').addClass('escondido');
+    $('#abrir-filtro').show();
+  });
+
+  // BOTÃO VERIFICAR PAGAMENTO
+  $('#verificar-btn').on('click', verificarPagamento);
 });
