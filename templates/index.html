@@ -5,14 +5,17 @@
   <title>alfaPIX - Pagamento via Pix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Ícones -->
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
-  <meta name="theme-color" content="#0077cc">
-
-  <!-- Estilos e jQuery -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1"></script>
+  <script>
+    window.supabase = supabase.createClient('https://weqtpacadwcmeqweavwo.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndlcXRwYWNhZHdjbWVxd2VhdndvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTA1NTEsImV4cCI6MjA2MzE2NjU1MX0.pM_-AeFn0WB82UuKPpzgin9rBpQ9NbqD2Wxm_1mZcbU');
+  </script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  
+
 </head>
 <body>
 
@@ -35,12 +38,20 @@
     <p id="status"></p>
   </div>
 
-  <div id="lista-pix">
-    <h3>📥 Pagamentos Recebidos</h3>
-    <ul id="historico-pix"></ul>
+  <div id="container-lista">
+    <button id="ocultar-lista" aria-label="Ocultar lista">
+      📥 Ocultar Pagamentos
+    </button>
+  
+    <button id="visualizar-lista" aria-label="Visualizar lista" style="display:none;">
+      📤 Visualizar Pagamentos
+    </button>
+  
+    <div id="lista-pix">
+      <ul id="historico-pix"></ul>
+    </div>
   </div>
-
-  <button id="limpar-lista" class="btn-cinza">🗑️ Limpar Lista</button>
+  
   <div id="alerta"></div>
 
   <div id="notificacao-pagamento">✅ Pagamento confirmado!</div>
@@ -49,6 +60,5 @@
     <source src="{{ url_for('static', filename='audio/confirmacao.mp3') }}" type="audio/mpeg">
   </audio>
 
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
-</html> 
+</html>

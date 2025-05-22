@@ -128,57 +128,123 @@ button:hover {
   transform: translateX(-50%) translateY(20px); /* Ajuste no transform para garantir a centralização */
 }
 
-#lista-pix {
-  margin-top: 20px;
-  width: 100%;
+/* Container da lista */
+#container-lista {
+  margin-top: 30px;
   max-width: 400px;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  border: 2px solid #0077cc;
 }
 
-#lista-pix h3 {
-  text-align: center;
-  color: #0077cc;
+/* Botões ocultar/visualizar */
+#ocultar-lista, #visualizar-lista {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  user-select: none;
+  transition: background-color 0.3s ease;
   margin-bottom: 10px;
+  margin-right: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 120px;
 }
 
-#historico-pix {
-  list-style: none;
-  padding: 0;
+#ocultar-lista:hover, #visualizar-lista:hover {
+  background-color: #357abd;
 }
 
-#historico-pix li {
-  background: #f9f9f9;
-  padding: 12px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+/* Lista geral */
+#lista-pix {
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 4px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  max-height: 1000px;
+  padding: 12px 16px;
+  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
+  opacity: 1;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.07);
+
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  align-items: flex-start;
-  opacity: 0;
-  animation: slideUp 0.5s forwards;
+  align-items: center;
+  text-align: center;
 }
 
-#historico-pix li span {
-  font-weight: bold;
+/* Esconder lista */
+#lista-pix.escondido {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+/* Título da lista */
+#lista-pix > h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 700;
+  font-size: 18px;
   color: #333;
 }
 
-#historico-pix li small {
-  font-size: 0.85em;
-  color: #777;
+/* Área da UL — centralizar */
+#historico-pix {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
-#limpar-lista {
-  margin-top: 10px;
-  display: block;
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
+/* Cada item da lista */
+#historico-pix li {
+  list-style: none;
+  background: #f9f9f9;
+  padding: 14px 20px;         /* Mais espaço interno */
+  margin-bottom: 12px;
+  border-radius: 14px;        /* Bordas arredondadas maiores */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;                   /* Espaço entre os elementos internos */
+  width: 90%;
+  max-width: 360px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* sombra mais suave e leve */
+  transition: background-color 0.3s ease;
+  cursor: default;
+}
+
+#historico-pix li:hover {
+  background-color: #e6f0ff;
+}
+
+/* Linha superior: nome e valor alinhados */
+#historico-pix li > span {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c3e50;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Valor em fonte monoespaçada para alinhamento */
+#historico-pix li > span strong {
+  font-family: 'Courier New', Courier, monospace;
+  color: #007bff;
+}
+
+/* Animação de fade na lista */
+#lista-pix,
+#lista-pix.escondido {
+  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
 }
 
 @keyframes slideIn {
