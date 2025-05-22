@@ -5,6 +5,20 @@
   <title>alfaPIX - Pagamento via Pix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <!-- Favicon padrão -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <!-- Outros favicons para diferentes dispositivos -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='favicons/favicon-180x180.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicons/favicon-512x512.png') }}">
+
+    <!-- Tema para navegadores mobile -->
+    <meta name="theme-color" content="#ffffff">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
