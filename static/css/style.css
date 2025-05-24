@@ -155,7 +155,11 @@ button::after {
   gap: 8px;
   justify-content: center;
   align-items: center;
+<<<<<<< HEAD
   flex-wrap: wrap; /* Permite quebrar no mobile */
+=======
+  flex-wrap: nowrap; /* evita quebra da linha */
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
   margin: 20px 0;
 }
 
@@ -174,6 +178,7 @@ button::after {
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   gap: 12px;
   min-width: 160px;      /* Diminuí para caber melhor */
   max-width: 200px;      /* Limite superior */
@@ -182,6 +187,15 @@ button::after {
   transition: background-color 0.3s ease;
   flex-wrap: nowrap;   /* garante que não quebre linha */
   margin-top: 10px;
+=======
+  gap: 8px;
+  min-width: 200px;      /* aumentar para garantir espaço */
+  max-width: 220px;      /* limitar máximo para não crescer demais */
+  white-space: nowrap;   /* evita quebra de texto */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background-color 0.3s ease;
+  /* remover flex para largura fixa */
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 }
 
 #container-botoes button:hover,
@@ -359,11 +373,18 @@ button::after {
 #filtro-datas {
   background-color: #fff;
   border-radius: 14px;
+<<<<<<< HEAD
   padding: 12px 16px;
   width: auto; /* deixar largura automática */
   max-width: 320px; /* reduzir largura da caixa branca */
   margin-top: 20px;
   margin: 20px auto; /* centralizar */
+=======
+  padding: 12px 22px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 20px;
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
 }
 
@@ -371,6 +392,7 @@ button::after {
   display: none !important;
 }
 
+<<<<<<< HEAD
 #filtro-container {
   display: flex;
   flex-direction: column;
@@ -393,6 +415,18 @@ button::after {
   flex: 1 1 auto; /* deixar as colunas adaptarem */
   display: flex;
   flex-direction: column;
+=======
+.linha-datas {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.linha-datas div {
+  display: flex;
+  flex-direction: column;
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
   align-items: flex-start;
 }
 
@@ -403,6 +437,7 @@ button::after {
 }
 
 .linha-datas input[type="date"] {
+<<<<<<< HEAD
   padding: 5px 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
@@ -411,11 +446,21 @@ button::after {
   font-size: 13px;
   color: #444;
   max-width: 100%;
+=======
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 140px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #444;
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 }
 
 #botoes-filtro {
   display: flex;
   justify-content: center;
+<<<<<<< HEAD
   gap: 8px; /* um pouco menos espaço */
   max-width: 280px; /* limitar largura total */
   margin-left: auto;
@@ -430,6 +475,11 @@ button::after {
   cursor: pointer;
 }
 
+=======
+  gap: 14px;
+}
+
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 /* ====== Lista de pagamentos (Tabela) ====== */
 #lista-pix table {
   width: 100%;
@@ -438,6 +488,7 @@ button::after {
   font-size: 0.95rem;
   font-weight: 600;
   color: #333;
+<<<<<<< HEAD
 }
 
 #lista-pix th,
@@ -568,6 +619,195 @@ button::after {
   #filtrar-btn {
     width: 100%;
   }
+=======
+}
+
+#lista-pix th,
+#lista-pix td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+#lista-pix thead {
+  background-color: #0077cc;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 12px 12px 0 0;
+}
+
+#contador-registros {
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #666;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ====== Estilo para itens da lista estilo comprovante com emojis ====== */
+#historico-pix li {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  color: #333;
+  transition: background-color 0.25s ease;
+  font-family: 'Segoe UI Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#historico-pix li:hover {
+  background-color: #e6f4ff;
+}
+
+/* Nome com emoji de pessoa */
+.pagamento-nome {
+  color: #0077cc;
+}
+
+.pagamento-data {
+  color: #555;
+  font-size: 0.9em;
+}
+
+.pagamento-valor {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+/* Mantendo emojis nas versões desktop */
+.pagamento-nome::before {
+  content: "👤 ";
+}
+.pagamento-data::before {
+  content: "📅 ";
+}
+.pagamento-valor::before {
+  content: "💰 ";
+}
+
+/* Valor com emoji de dinheiro */
+.pagamento-valor {
+  font-weight: 700;
+  color: #28a745;
+  white-space: nowrap;
+  justify-self: end;
+}
+.pagamento-valor::before {
+  content: "💰 ";
+}
+
+/* Ajuste mobile */
+@media (max-width: 480px) {
+  #historico-pix li {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 16px;
+  }
+  .pagamento-nome::before,
+  .pagamento-data::before,
+  .pagamento-valor::before {
+    content: ""; /* Remove emojis no mobile para mais espaço */
+  }
+  .pagamento-valor {
+    justify-self: start;
+    color: #2a7a2a;
+  }
+}
+
+/* ====== Botões aplicar e cancelar cores originais ====== */
+button#aplicar-filtro {
+  background-color: #ffc107; /* amarelo */
+  color: #333;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 10px 18px;
+  min-width: 140px;
+  transition: background-color 0.3s ease;
+}
+button#aplicar-filtro:hover {
+  background-color: #d39e00;
+  color: white;
+}
+
+button#cancelar-filtro {
+  background-color: #e74c3c; /* vermelho */
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 10px 18px;
+  min-width: 140px;
+  transition: background-color 0.3s ease;
+}
+button#cancelar-filtro:hover {
+  background-color: #c0392b;
+}
+
+.lista-comprovantes > div {
+  background-color: #f9f6f1; /* bege clarinho */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  transition: box-shadow 0.25s ease;
+}
+
+.lista-comprovantes > div:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.lista-comprovantes > div .topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 17px;
+  color: #4a403a;
+}
+
+.lista-comprovantes > div .valor {
+  color: #bb8f00; /* amarelo elegante */
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.lista-comprovantes > div .data {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #777;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Preparar animação para lista e filtro */
+#lista-pix,
+#filtro-datas {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-10px);
+  transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Quando visível, max-height grande e opacidade 1 */
+#lista-pix.ativo,
+#filtro-datas.ativo {
+  max-height: 1000px; /* valor alto para acomodar o conteúdo */
+  opacity: 1;
+  transform: translateY(0);
+  overflow: visible;
+>>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 }
 
 
