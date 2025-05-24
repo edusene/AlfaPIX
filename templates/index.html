@@ -5,44 +5,49 @@
   <title>alfaPIX - Pagamento via Pix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Favicon padrão -->
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <!-- Favicons -->
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
+  <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='favicons/favicon-180x180.png') }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicons/favicon-512x512.png') }}">
+  <meta name="theme-color" content="#ffffff">
 
-    <!-- Outros favicons para diferentes dispositivos -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicons/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicons/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicons/favicon-16x16.png') }}">
-    <link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='favicons/favicon-180x180.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='favicons/favicon-192x192.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicons/favicon-512x512.png') }}">
-
-    <!-- Tema para navegadores mobile -->
-    <meta name="theme-color" content="#ffffff">
-
+  <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-    <!-- Inicializando o Supabase com as variáveis passadas pelo Flask -->
-    <script>
-      window.supabase = supabase.createClient('{{ SUPABASE_URL }}', '{{ SUPABASE_ANON_KEY }}');
-  </script>
-
-  <!-- Incluindo o seu script.js -->
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </head>
 <body>
 
+  <a href="/logout" 
+     style="position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 5px 10px; border-radius: 8px; text-decoration: none; z-index: 10000;">
+     Sair
+  </a>
+
+  {% if modo_visualizacao %}
+  <div style="background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; margin-bottom: 20px; text-align:center;">
+      Você está no <strong>Modo Visualização</strong>. Os dados são fictícios e apenas para demonstração.
+  </div>
+  {% endif %}
+
   <img src="{{ url_for('static', filename='images/logo.png') }}" alt="alfaPIX" class="logo-principal" />
   <h1 style="position: absolute; left: -9999px;">alfaPIX</h1>
 
+  <!-- Formulário de cobrança -->
   <form id="form-cobrar">
     <label>Valor (R$):</label>
     <input type="number" name="valor" step="0.01" required />
     <button type="submit" class="btn-azul">Gerar cobrança</button>
   </form>
 
+  <!-- Resultado QR Code -->
   <div id="resultado" aria-live="polite">
     <h3 id="titulo-qrcode">QR Code:</h3>
     <img id="qrcode" src="" alt="QR Code Pix" />
@@ -53,50 +58,46 @@
     <p id="status"></p>
   </div>
 
+  <!-- Botões superiores -->
   <div id="container-botoes">
-    <button id="ocultar-lista">
-      📥 Ocultar Pagamentos
-    </button>
-  
-    <button id="visualizar-lista" style="display: none;">
-      📤 Visualizar Pagamentos
-    </button>
-  
-    <button id="abrir-filtro">
-      🔍 Filtrar
-    </button> 
-    </div>
-    
-    <!-- Caixa do filtro -->
-    <div id="filtro-datas" class="escondido">
-      <div class="linha-datas">
-        <div>
-          <label for="data-inicio">Data Início:</label>
-          <input type="date" id="data-inicio" name="data-inicio" />
-        </div>
-    
-        <div>
-          <label for="data-fim">Data Fim:</label>
-          <input type="date" id="data-fim" name="data-fim" />
-        </div>
-      </div>    
-    
-      <div id="botoes-filtro">
-        <button id="aplicar-filtro" type="button">Aplicar</button>
-        <button id="cancelar-filtro" type="button">Cancelar</button>
+    <button id="ocultar-lista">📥 Ocultar Pagamentos</button>
+    <button id="visualizar-lista" style="display: none;">📤 Visualizar Pagamentos</button>
+    <button id="abrir-filtro">🔍 Filtrar</button> 
+  </div>  
+
+  <!-- Caixa de filtro de datas -->
+  <div id="filtro-datas" class="escondido">
+    <div class="linha-datas">
+      <div>
+        <label for="data-inicio">Data Início:</label>
+        <input type="date" id="data-inicio" name="data-inicio" />
       </div>
-    </div>
-                 
-  
-    <div id="lista-pix">
-      <ul id="historico-pix"></ul>
+      <div>
+        <label for="data-fim">Data Fim:</label>
+        <input type="date" id="data-fim" name="data-fim" />
+      </div>
+    </div>    
+    <div id="botoes-filtro">
+      <button id="aplicar-filtro" type="button">Aplicar</button>
+      <button id="cancelar-filtro" type="button">Cancelar</button>
     </div>
   </div>
-  
+
+<!-- Lista de pagamentos -->
+<div id="lista-pix" class="escondido">
+  <div id="lista-pagamentos" class="lista-comprovantes">
+    <!-- Cada pagamento será um "comprovante" aqui pelo JS -->
+  </div>
+  <div id="contador-registros" style="margin-bottom: 10px; font-weight: bold;"></div>
+</div>
+
+  <!-- Alerta geral -->
   <div id="alerta"></div>
 
+  <!-- Notificação de pagamento -->
   <div id="notificacao-pagamento">✅ Pagamento confirmado!</div>
 
+  <!-- Som de confirmação -->
   <audio id="som-confirmacao" preload="auto">
     <source src="{{ url_for('static', filename='audio/confirmacao.mp3') }}" type="audio/mpeg">
   </audio>

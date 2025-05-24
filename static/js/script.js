@@ -1,71 +1,138 @@
 let intervalo;
 let pagamentoConcluido = false;
 
-// -------------------- ALERTAS E NOTIFICAÇÕES --------------------
+// Variáveis globais para filtro de datas
+let filtroInicio;
+let filtroFim;
 
+// 🔧 Cria um objeto Date localmente (mes começa em 1)
+function criarDataLocal(ano, mes, dia, hora = 0, minuto = 0, segundo = 0) {
+  return new Date(ano, mes - 1, dia, hora, minuto, segundo);
+}
+
+// 🕒 Formata Date para string "YYYY-MM-DD HH:mm:ss"
+function formatarLocal(date) {
+  const pad = n => n.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+// 🕓 Formata Date para exibição no padrão BR com UTC-4 (Rondônia)
+function formatarDataLocalRondonia(data) {
+  const pad = n => n.toString().padStart(2, '0');
+  return `${pad(data.getDate())}/${pad(data.getMonth() + 1)}/${data.getFullYear()} ` +
+         `${pad(data.getHours())}:${pad(data.getMinutes())}:${pad(data.getSeconds())}`;
+}
+
+// 🚨 Exibe alerta com mensagem e tipo (ex: 'error', 'success')
 function mostrarAlerta(msg, tipo) {
   $('#alerta').html(`<div class="alert ${tipo}">${msg}</div>`);
 }
 
+// 🔔 Exibe notificação temporária no topo da tela
 function mostrarNotificacao(msg) {
   const notif = $('#notificacao-pagamento');
   notif.text(msg).addClass('show');
   setTimeout(() => notif.removeClass('show'), 4000);
 }
 
-// -------------------- CARREGAR HISTÓRICO --------------------
+// 📜 Converte string "YYYY-MM-DD HH:mm:ss" para objeto Date local
+function parseDateLocal(str) {
+  const [datePart, timePart] = str.split(' ');
+  if (!datePart || !timePart) return new Date(NaN);
 
-async function carregarHistorico(inicio = null, fim = null) {
-  let query = supabase
-    .from('historico_pagamentos')
-    .select('*')
-    .order('dataHora', { ascending: false });
+  const [day, month, year] = datePart.split('/').map(Number);
+  const [hour, minute, second] = timePart.split(':').map(Number);
 
-  if (inicio) query = query.gte('dataHora', inicio);
-  if (fim) query = query.lte('dataHora', fim);
+  return new Date(year, month - 1, day, hour, minute, second);
+}
 
-  const { data, error } = await query;
-
-  const lista = $('#historico-pix');
-  lista.empty();
-
-  if (error) {
-    console.error('❌ ERRO ao carregar histórico:', error);
-    mostrarAlerta('Erro ao carregar histórico.', 'error');
+// Atualiza a lista de pagamentos exibida na tela
+function atualizarHistorico(pagamentos) {
+  const container = document.getElementById('lista-pagamentos');
+  if (!container) {
+    console.error('Elemento #lista-pagamentos não encontrado!');
     return;
   }
 
-  if (data.length > 0) {
-    data.forEach(p => {
-      lista.append(`
-        <li>
-          <span>✅ ${p.nome} - R$ ${parseFloat(p.valor).toFixed(2)}</span>
-          <small>${new Date(p.dataHora).toLocaleString()}</small>
-        </li>
-      `);
+  // Animação de saída
+  $(container).fadeOut(300, () => {
+    container.innerHTML = '';
+
+    if (!pagamentos || pagamentos.length === 0) {
+      container.innerHTML = `<p class="nenhum-pagamento">Nenhum pagamento encontrado.</p>`;
+      const contador = document.getElementById('contador-registros');
+      if (contador) contador.textContent = 'Total de registros: 0';
+
+      // Animação de entrada
+      $(container).fadeIn(300);
+      return;
+    }
+
+    pagamentos.forEach(p => {
+      const dataLocal = parseDateLocal(p.dataHora);
+
+      const div = document.createElement('div');
+      div.className = 'comprovante';
+
+      div.innerHTML = `
+        <p>👤 <strong>Nome:</strong> ${p.nome}</p>
+        <p>💰 <strong>Valor:</strong> R$ ${parseFloat(p.valor).toFixed(2)}</p>
+        <p>📅 <strong>Data/Hora:</strong> ${formatarDataLocalRondonia(dataLocal)}</p>
+      `;
+
+      container.appendChild(div);
     });
-  } else {
-    lista.append('<li style="text-align:center; color:#888;">Nenhum pagamento registrado neste período.</li>');
-  }
+
+    const contador = document.getElementById('contador-registros');
+    if (contador) contador.textContent = `Total de registros: ${pagamentos.length}`;
+
+    // Animação de entrada
+    $(container).fadeIn(300);
+  });
 }
 
-// -------------------- SALVAR NO HISTÓRICO --------------------
+// 🔍 Busca e carrega histórico com filtro de datas
+function carregarHistorico(inicio = '', fim = '') {
+  const url = `/historico?inicio=${encodeURIComponent(inicio)}&fim=${encodeURIComponent(fim)}`;
 
-async function salvarNoHistorico(nome, valor) {
-  const { error } = await supabase
-    .from('historico_pagamentos')
-    .insert([{ nome, valor, dataHora: new Date().toISOString() }]);
-
-  if (error) {
-    console.error('❌ ERRO Supabase:', error);
-    mostrarAlerta('Erro ao salvar no Supabase.', 'error');
-  } else {
-    console.log('✅ SUPABASE: Pagamento salvo com sucesso');
-  }
+  fetch(url)
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    if (data.error) {
+      mostrarAlerta(data.error, 'error');
+      return;
+    }
+    atualizarHistorico(data);
+  })
+  .catch(err => {
+    console.error('❌ Erro ao carregar histórico:', err);
+    mostrarAlerta('Erro ao carregar histórico.', 'error');
+  });
 }
 
-// -------------------- VERIFICAR PAGAMENTO --------------------
+// 💾 Salva pagamento no histórico via POST
+function salvarNoHistorico(nome, valor) {
+  const dataHora = new Date().toISOString(); // Gera data atual no formato correto
 
+  return fetch('/salvar-historico', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nome, valor, dataHora })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Erro ao salvar no histórico.');
+    console.log('✅ Histórico salvo');
+  })
+  .catch(err => {
+    console.error('❌ Erro ao salvar no histórico:', err);
+  });
+}
+
+// 🔍 Verifica status do pagamento e atualiza UI
 function verificarPagamento() {
   const txid = $('#txid').val();
 
@@ -84,27 +151,26 @@ function verificarPagamento() {
     $('#status').text('Status: ' + statusTexto);
 
     if (statusRaw === 'CONCLUIDA') {
-      console.log('✅ Pagamento concluído detectado!');
-
       pagamentoConcluido = true;
       clearInterval(intervalo);
 
       mostrarNotificacao('✅ Pagamento confirmado!');
       mostrarAlerta('✅ Pagamento confirmado!', 'success');
-      document.getElementById('som-confirmacao').play().catch(() => {});
+
+      // Tocar som, evitar erro caso o áudio não carregue
+      document.getElementById('som-confirmacao')?.play().catch(() => {});
 
       const nomePagador = data.nome_pagador || 'Pagador não identificado';
-      const valorPago = $('input[name="valor"]').val();
+      const valorPago = data.valor_pago || $('input[name="valor"]').val();
 
       await salvarNoHistorico(nomePagador, valorPago);
-      await carregarHistorico();
+      carregarHistorico(filtroInicio, filtroFim);
+
+      $('#visualizar-lista').click();
 
       $('#status').text(`Pagamento confirmado! Pagador: ${nomePagador} | Valor: R$ ${valorPago}`);
 
-      $('#titulo-qrcode').fadeOut(200);
-      $('#qrcode').fadeOut(200);
-      $('#verificar-btn').fadeOut(200);
-      $('#status').fadeOut(200);
+      $('#titulo-qrcode, #qrcode, #verificar-btn, #status').fadeOut(200);
 
       setTimeout(() => {
         $('#cancelar-btn')
@@ -119,65 +185,49 @@ function verificarPagamento() {
   });
 }
 
-// -------------------- RESET FORMULÁRIO --------------------
-
+// ♻️ Reseta formulário e UI para novo ciclo
 function resetFormulario() {
   clearInterval(intervalo);
 
   $('#qrcode').fadeOut(100).attr('src', '');
-  $('#verificar-btn').fadeOut(100);
-  $('#status').fadeOut(100);
-  $('#titulo-qrcode').fadeOut(100);
-  $('#resultado').fadeOut(100);
-
+  $('#verificar-btn, #status, #titulo-qrcode, #resultado').fadeOut(100);
   $('#form-cobrar')[0].reset();
   $('#alerta').html('');
 
-  $('#cancelar-btn').fadeOut(100, function () {
+  $('#cancelar-btn').fadeOut(100, () => {
     $('#form-cobrar').fadeIn(200);
   });
 
   pagamentoConcluido = false;
 }
 
-// -------------------- CÓDIGO PRINCIPAL --------------------
+// 🚀 Inicialização ao carregar DOM
+$(document).ready(() => {
+  $('#lista-pix').addClass('escondido');
+  $('#ocultar-lista').hide();
+  $('#visualizar-lista').show();
+  $('#abrir-filtro').hide();
 
-$(document).ready(function () {
+  const hoje = new Date();
+  filtroInicio = formatarLocal(criarDataLocal(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate(), 0, 0, 0));
+  filtroFim = formatarLocal(criarDataLocal(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate(), 23, 59, 59));
 
-// Estado inicial
-$('#lista-pix').addClass('escondido');
-$('#ocultar-lista').hide();
-$('#visualizar-lista').show();
-$('#abrir-filtro').hide(); // 🔥 Esconde o botão de filtro inicialmente
+  carregarHistorico(filtroInicio, filtroFim);
 
-  // Configurar datas para hoje (início e fim)
-  const hoje = new Date().toISOString().split('T')[0];
-  const inicioISO = new Date(hoje + "T00:00:00").toISOString();
-  const fimISO = new Date(hoje + "T23:59:59").toISOString();
-
-  // Carregar histórico inicial com filtro do dia
-  carregarHistorico(inicioISO, fimISO);
-
-  // FORMULÁRIO - Gerar cobrança
   $('#form-cobrar').on('submit', function (e) {
     e.preventDefault();
 
     $('#alerta').html('');
-    $('#resultado').hide();
-    $('#qrcode').attr('src', '').hide();
-    $('#verificar-btn').hide();
+    $('#resultado, #qrcode, #verificar-btn').hide();
 
     const valor = $('input[name="valor"]').val();
 
-    $.post('/cobrar', { valor: valor }, function (data) {
-      console.log('Resposta do servidor:', data);
-
+    $.post('/cobrar', { valor }, function (data) {
       if (data.qrcode && data.txid) {
         $('#txid').val(data.txid);
         $('#status').text('Aguardando pagamento...');
         $('#qrcode').attr('src', data.qrcode).fadeIn();
-        $('#resultado').fadeIn();
-        $('#verificar-btn').fadeIn();
+        $('#resultado, #verificar-btn').fadeIn();
 
         $('#cancelar-btn')
           .removeClass('btn-verde btn-pulse')
@@ -190,48 +240,44 @@ $('#abrir-filtro').hide(); // 🔥 Esconde o botão de filtro inicialmente
       } else {
         mostrarAlerta('Erro ao gerar cobrança.', 'error');
       }
-    }).fail(function () {
+    }).fail(() => {
       mostrarAlerta('Erro na comunicação com o servidor.', 'error');
     });
   });
 
-  // BOTÃO CANCELAR
-  $(document).on('click', '#cancelar-btn', function () {
+  $('#cancelar-btn').on('click', () => {
     if (pagamentoConcluido) {
       resetFormulario();
     } else {
-      const confirmar = confirm("Você tem certeza que deseja cancelar a cobrança?");
-      if (confirmar) {
+      if (confirm("Você tem certeza que deseja cancelar a cobrança?")) {
         clearInterval(intervalo);
         resetFormulario();
       }
     }
   });
 
-  // BOTÕES OCULTAR / VISUALIZAR LISTA
-$('#ocultar-lista').on('click', function () {
-  $('#lista-pix').addClass('escondido');
-  $('#ocultar-lista').hide();
-  $('#visualizar-lista').show();
-  $('#abrir-filtro').hide(); // esconde o botão filtrar
-});
+  $('#visualizar-lista').on('click', () => {
+    $('#lista-pix').removeClass('escondido');
+    setTimeout(() => $('#lista-pix').addClass('ativo'), 20);
 
-$('#visualizar-lista').on('click', function () {
-  $('#lista-pix').removeClass('escondido');
-  $('#visualizar-lista').hide();
-  $('#ocultar-lista').show();
-  $('#abrir-filtro').show(); // mostra o botão filtrar
-});
+    $('#visualizar-lista').hide();
+    $('#ocultar-lista, #abrir-filtro').show();
+  });
 
+  $('#ocultar-lista').on('click', () => {
+    $('#lista-pix').removeClass('ativo');
+    setTimeout(() => $('#lista-pix').addClass('escondido'), 400);
 
-  // BOTÃO ABRIR FILTRO
-  $('#abrir-filtro').on('click', function () {
-    $('#filtro-datas').removeClass('escondido');
+    $('#ocultar-lista, #abrir-filtro').hide();
+    $('#visualizar-lista').show();
+  });
+
+  $('#abrir-filtro').on('click', () => {
+    $('#filtro-datas').addClass('ativo').removeClass('escondido');
     $('#abrir-filtro').hide();
   });
 
-  // BOTÃO APLICAR FILTRO (aplica filtro, não oculta)
-  $('#aplicar-filtro').on('click', function () {
+  $('#aplicar-filtro').on('click', () => {
     const dataInicio = $('#data-inicio').val();
     const dataFim = $('#data-fim').val();
 
@@ -240,23 +286,28 @@ $('#visualizar-lista').on('click', function () {
       return;
     }
 
-    const inicioFiltro = new Date(dataInicio + "T00:00:00").toISOString();
-    const fimFiltro = new Date(dataFim + "T23:59:59").toISOString();
+    const [anoIni, mesIni, diaIni] = dataInicio.split('-').map(Number);
+    const [anoFim, mesFim, diaFim] = dataFim.split('-').map(Number);
 
-    carregarHistorico(inicioFiltro, fimFiltro);
+    filtroInicio = formatarLocal(criarDataLocal(anoIni, mesIni, diaIni, 0, 0, 0));
+    filtroFim = formatarLocal(criarDataLocal(anoFim, mesFim, diaFim, 23, 59, 59));
+
+    carregarHistorico(filtroInicio, filtroFim);
   });
 
-  // BOTÃO CANCELAR FILTRO (limpa, oculta filtro e recarrega histórico do dia)
-  $('#cancelar-filtro').on('click', function () {
-    $('#data-inicio').val('');
-    $('#data-fim').val('');
+  $('#cancelar-filtro').on('click', () => {
+    $('#data-inicio, #data-fim').val('');
 
-    carregarHistorico(inicioISO, fimISO);
+    const hoje = new Date();
+    filtroInicio = formatarLocal(criarDataLocal(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate(), 0, 0, 0));
+    filtroFim = formatarLocal(criarDataLocal(hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate(), 23, 59, 59));
 
-    $('#filtro-datas').addClass('escondido');
+    carregarHistorico(filtroInicio, filtroFim);
+
+    $('#filtro-datas').removeClass('ativo');
+    setTimeout(() => $('#filtro-datas').addClass('escondido'), 400);
     $('#abrir-filtro').show();
   });
 
-  // BOTÃO VERIFICAR PAGAMENTO
   $('#verificar-btn').on('click', verificarPagamento);
 });

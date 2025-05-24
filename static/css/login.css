@@ -1,0 +1,74 @@
+/* Estilo do Login */
+body {
+    background-color: #f3f4f6;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.login-container {
+    max-width: 280px;
+    width: 90%;
+    margin: 10vh auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título */
+.login-container h1 {
+    margin-bottom: 18px;
+    color: #10b981;
+    font-size: 1.6rem;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+/* Botão */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #059669;
+}
+
+/* Erro */
+.erro {
+    color: red;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Ajuste para telas muito pequenas */
+@media (max-width: 400px) {
+    .login-container {
+        max-width: 250px;
+        padding: 18px;
+    }
+
+    input, button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+}
