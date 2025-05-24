@@ -29,11 +29,17 @@ form {
   margin-bottom: 30px; /* Afastar dos botões */
 }
 
+/* Input do valor */
 input[type="number"] {
-  padding: 8px;
+  padding: 6px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  width: 120px;
+}
+
+@media (max-width: 480px) {
+  input[type="number"] {
+    width: 100%;
+  }
 }
 
 /* ====== Botões padrão ====== */
@@ -143,12 +149,13 @@ button::after {
 }
 
 /* ====== Container de botões ====== */
+/* Container dos botões */
 #container-botoes {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap; /* evita quebra da linha */
+  flex-wrap: wrap; /* Permite quebrar no mobile */
   margin: 20px 0;
 }
 
@@ -160,26 +167,44 @@ button::after {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 10px 18px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-width: 200px;      /* aumentar para garantir espaço */
-  max-width: 220px;      /* limitar máximo para não crescer demais */
-  white-space: nowrap;   /* evita quebra de texto */
+  gap: 12px;
+  min-width: 160px;      /* Diminuí para caber melhor */
+  max-width: 200px;      /* Limite superior */
+  white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   transition: background-color 0.3s ease;
-  /* remover flex para largura fixa */
+  flex-wrap: nowrap;   /* garante que não quebre linha */
+  margin-top: 10px;
 }
 
 #container-botoes button:hover,
 #ocultar-lista:hover,
-#visualizar-lista:hover {
+#visualizar-lista:hover,
+#abrir-filtro:hover {
   background-color: #0056b3;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  #container-botoes {
+    gap: 6px;
+  }
+
+  #container-botoes button,
+  #ocultar-lista,
+  #visualizar-lista,
+  #abrir-filtro {
+    flex: 1 1 45%; /* Fica lado a lado no mobile */
+    min-width: unset;
+    max-width: unset;
+  }
 }
 
 /* Cor específica para o botão Filtrar */
@@ -293,11 +318,6 @@ button::after {
   100% { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
 @keyframes fadeAlert {
   0% { opacity: 0; }
   100% { opacity: 1; }
@@ -339,10 +359,11 @@ button::after {
 #filtro-datas {
   background-color: #fff;
   border-radius: 14px;
-  padding: 12px 22px;
-  width: 100%;
-  max-width: 420px;
+  padding: 12px 16px;
+  width: auto; /* deixar largura automática */
+  max-width: 320px; /* reduzir largura da caixa branca */
   margin-top: 20px;
+  margin: 20px auto; /* centralizar */
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
 }
 
@@ -350,14 +371,26 @@ button::after {
   display: none !important;
 }
 
+#filtro-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centraliza horizontalmente */
+  gap: 16px; /* espaço vertical entre linhas */
+  padding: 10px;
+}
+
 .linha-datas {
   display: flex;
-  gap: 16px;
+  gap: 8px; /* menor espaço entre os inputs */
   margin-bottom: 10px;
   justify-content: center;
+  max-width: 280px; /* limitar a largura total da linha */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .linha-datas div {
+  flex: 1 1 auto; /* deixar as colunas adaptarem */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -370,19 +403,31 @@ button::after {
 }
 
 .linha-datas input[type="date"] {
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  width: 140px;
+  width: 100px; /* menor que antes */
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: #444;
+  max-width: 100%;
 }
 
 #botoes-filtro {
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 8px; /* um pouco menos espaço */
+  max-width: 280px; /* limitar largura total */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#botoes-filtro button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  min-width: 70px; /* botões mais estreitos */
+  cursor: pointer;
 }
 
 /* ====== Lista de pagamentos (Tabela) ====== */
@@ -494,6 +539,38 @@ button::after {
   }
 }
 
+@media (max-width: 480px) {
+  #container-botoes {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  #container-botoes button,
+  #abrir-filtro,
+  #ocultar-lista,
+  #visualizar-lista {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+    font-size: 14px;
+  }
+
+  #historico-pix li {
+    font-size: 0.9rem;
+  }
+
+  #filtro-datas {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #filtrar-btn {
+    width: 100%;
+  }
+}
+
+
 /* ====== Botões aplicar e cancelar cores originais ====== */
 button#aplicar-filtro {
   background-color: #ffc107; /* amarelo */
@@ -580,4 +657,49 @@ button#cancelar-filtro:hover {
   opacity: 1;
   transform: translateY(0);
   overflow: visible;
+}
+
+#container-botoes {
+  display: flex;           /* organiza em linha */
+  justify-content: center; /* centraliza horizontalmente */
+  gap: 12px;               /* espaço entre os botões */
+  flex-wrap: wrap;         /* se não couber, quebra a linha */
+}
+
+#container-botoes button {
+  flex: 1 1 auto;          /* os botões tentam ocupar o espaço disponível */
+  max-width: 180px;        /* limite máximo para não ficarem muito largos */
+  min-width: 120px;        /* limite mínimo para não ficarem muito pequenos */
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background-color 0.3s ease;
+}
+
+#container-botoes button:hover {
+  background-color: #0056b3;
+}
+
+.nenhum-pagamento {
+  font-size: 1.1rem;
+  color: #555;              /* Cinza suave */
+  background-color: #f0f0f0; /* Fundo clarinho */
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-style: italic;
+  margin: 20px auto;
+  max-width: 400px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  user-select: none;
 }

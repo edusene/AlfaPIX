@@ -4,10 +4,24 @@ from sicoob.auth import token_data
 from config import *
 
 import requests
-import sqlite3
 from datetime import datetime, timedelta
 import traceback
 import os
+
+from zoneinfo import ZoneInfo
+from dateutil import parser
+
+from supabase import create_client, Client
+
+# Carregar variáveis do ambiente ANTES de criar o cliente
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY')
+
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    raise ValueError("Variáveis SUPABASE_URL ou SUPABASE_ANON_KEY não estão configuradas no ambiente.")
+
+# Criar o cliente Supabase uma única vez, com as variáveis corretas
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 # Fuso horário fixo UTC-4 para "America/Manaus"
 FUSO = timedelta(hours=-4)
@@ -26,35 +40,9 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', '15112020')
 app.permanent_session_lifetime = timedelta(days=365)
 
-# Banco de dados
-def get_db_connection():
-    conn = sqlite3.connect('historico.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS historico_pagamentos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT NOT NULL,
-                valor REAL NOT NULL,
-                dataHora TEXT NOT NULL,
-                status TEXT
-            )
-        ''')
-        conn.commit()
-
-init_db()
-
 def rows_to_list(rows):
-    return [{
-        'id': row['id'],
-        'nome': row['nome'],
-        'valor': row['valor'],
-        'dataHora': row['dataHora']
-    } for row in rows]
+    # Supabase já retorna lista de dicts, só retorna direto
+    return rows
 
 # ===========================
 # ROTAS
@@ -95,43 +83,67 @@ def index():
 
 @app.route('/historico')
 def historico():
+    inicio_str = request.args.get('inicio')
+    fim_str = request.args.get('fim')
+
     try:
-        inicio = request.args.get('inicio')
-        fim = request.args.get('fim')
+        inicio = datetime.strptime(inicio_str, '%Y-%m-%d %H:%M:%S')
+        fim = datetime.strptime(fim_str, '%Y-%m-%d %H:%M:%S')
+    except Exception as e:
+        return jsonify({'error': f'Formato de data inválido: {e}'}), 400
 
-        if not inicio or not fim:
-            return jsonify({"error": "Parâmetros 'inicio' e 'fim' são obrigatórios."}), 400
+    try:
+        response = supabase.from_('historico_pagamentos') \
+            .select('nome, valor, dataHora') \
+            .gte('dataHora', inicio.isoformat()) \
+            .lte('dataHora', fim.isoformat()) \
+            .order('dataHora', desc=True) \
+            .execute()
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT id, nome, valor, dataHora
-                FROM historico_pagamentos
-                WHERE dataHora BETWEEN ? AND ?
-                ORDER BY dataHora DESC
-            """, (inicio, fim))
-            rows = cursor.fetchall()
+        if response.data is None:
+            print('Erro na resposta do Supabase:', response)
+            return jsonify({'error': 'Erro ao consultar banco'}), 500
 
-        lista = rows_to_list(rows)
-        return jsonify(lista), 200
+        registros = response.data
+
+        resultado = []
+        for p in registros:
+            iso_str = p['dataHora']  # exemplo: '2025-05-24T21:28:54.941+00:00'
+            # Converter para datetime com timezone (UTC)
+            dt_utc = parser.parse(iso_str)
+
+            # Converter para horário de Cuiabá
+            dt_cuiaba = dt_utc.astimezone(ZoneInfo('America/Cuiaba'))
+
+            # Formatar para string legível
+            datahora_formatada = dt_cuiaba.strftime('%d/%m/%Y %H:%M:%S')
+
+            resultado.append({
+                'nome': p['nome'],
+                'valor': p['valor'],
+                'dataHora': datahora_formatada
+            })
+
+        return jsonify(resultado)
 
     except Exception as e:
+        print('Erro interno:', e)
         traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'error': 'Erro interno no servidor'}), 500
 
 @app.route('/historico-tudo')
 def historico_tudo():
     try:
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT id, nome, valor, dataHora
-                FROM historico_pagamentos
-                ORDER BY dataHora DESC
-            """)
-            rows = cursor.fetchall()
+        response = supabase \
+            .from_('historico_pagamentos') \
+            .select('id, nome, valor, dataHora') \
+            .order('dataHora', desc=True) \
+            .execute()
 
-        lista = rows_to_list(rows)
+        if response.error:
+            raise Exception(response.error.message)
+
+        lista = rows_to_list(response.data)
         return jsonify(lista), 200
 
     except Exception as e:
@@ -148,17 +160,18 @@ def historico_hoje():
         inicio_str = inicio.strftime('%Y-%m-%d %H:%M:%S')
         fim_str = fim.strftime('%Y-%m-%d %H:%M:%S')
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT id, nome, valor, dataHora
-                FROM historico_pagamentos
-                WHERE dataHora BETWEEN ? AND ?
-                ORDER BY dataHora DESC
-            """, (inicio_str, fim_str))
-            rows = cursor.fetchall()
+        response = supabase \
+            .from_('historico_pagamentos') \
+            .select('id, nome, valor, dataHora') \
+            .gte('dataHora', inicio_str) \
+            .lte('dataHora', fim_str) \
+            .order('dataHora', desc=True) \
+            .execute()
 
-        lista = rows_to_list(rows)
+        if response.error:
+            raise Exception(response.error.message)
+
+        lista = rows_to_list(response.data)
         return jsonify(lista), 200
 
     except Exception as e:
@@ -260,38 +273,34 @@ def verificar():
 def salvar_historico():
     try:
         dados = request.get_json()
+        print('🟨 Dados recebidos:', dados)  # Debug útil
+
         nome = dados.get('nome')
         valor = dados.get('valor')
+        dataHora = dados.get('dataHora')
 
-        if not nome or valor is None:
-            return jsonify({"error": "Nome e valor são obrigatórios."}), 400
+        if not nome or not valor or not dataHora:
+            return jsonify({'error': 'Dados incompletos'}), 400
 
-        try:
-            valor_float = float(valor)
-        except ValueError:
-            return jsonify({"error": "Valor inválido."}), 400
+        response = supabase.from_('historico_pagamentos').insert([{
+            'nome': nome,
+            'valor': valor,
+            'dataHora': dataHora
+        }]).execute()
 
-        data_hora = now_fixed_offset().strftime('%Y-%m-%d %H:%M:%S')
+        if response.data is None or len(response.data) == 0:
+            print('❌ Erro na resposta do Supabase:', response)
+            return jsonify({'error': 'Erro ao salvar no banco de dados'}), 500
 
-        with get_db_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO historico_pagamentos (nome, valor, dataHora)
-                VALUES (?, ?, ?)
-            """, (nome, valor_float, data_hora))
-            conn.commit()
-
-        print(f"[DEBUG] Histórico salvo: {nome} - {valor_float} - {data_hora}")
-
-        return jsonify({"status": "ok"}), 200
+        return jsonify({'message': 'Salvo com sucesso'}), 200
 
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        print('❌ Erro ao salvar no histórico:', e)
+        return jsonify({'error': str(e)}), 500
 
 # ===========================
 # MAIN
 # ===========================
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
