@@ -148,11 +148,7 @@ button::after {
   gap: 12px;
   justify-content: center;
   align-items: center;
-<<<<<<< HEAD
   flex-wrap: nowrap; /* evita quebra da linha */
-=======
-  flex-wrap: wrap;
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
   margin: 20px 0;
 }
 
@@ -172,18 +168,12 @@ button::after {
   align-items: center;
   justify-content: center;
   gap: 8px;
-<<<<<<< HEAD
   min-width: 200px;      /* aumentar para garantir espaço */
   max-width: 220px;      /* limitar máximo para não crescer demais */
   white-space: nowrap;   /* evita quebra de texto */
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   transition: background-color 0.3s ease;
   /* remover flex para largura fixa */
-=======
-  min-width: 180px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  transition: background-color 0.3s ease;
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
 }
 
 #container-botoes button:hover,
@@ -196,12 +186,9 @@ button::after {
 #abrir-filtro {
   background-color: #ffc107;
   color: #333;
-<<<<<<< HEAD
   /* manter o flex para consistência */
   flex: 1 1 180px;
   max-width: 240px;
-=======
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
 }
 
 #abrir-filtro:hover {
@@ -258,7 +245,6 @@ button::after {
   font-size: 1rem;
 }
 
-<<<<<<< HEAD
 /* ====== Itens da lista estilo box notificação/comprovante ====== */
 #historico-pix li {
   background: #fff;
@@ -272,20 +258,6 @@ button::after {
   font-size: 1rem;
   color: #333;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-=======
-#historico-pix li {
-  list-style: none;
-  background: #f9f9f9;
-  padding: 14px 20px;
-  margin-bottom: 12px;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 90%;
-  max-width: 360px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
   transition: background-color 0.3s ease;
 }
 
@@ -365,7 +337,6 @@ button::after {
 
 /* ====== Filtro de datas ====== */
 #filtro-datas {
-<<<<<<< HEAD
   background-color: #fff;
   border-radius: 14px;
   padding: 12px 22px;
@@ -373,29 +344,12 @@ button::after {
   max-width: 420px;
   margin-top: 20px;
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
-=======
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 16px 20px;
-  border-radius: 10px;
-  margin: 20px auto;
-  max-width: 600px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-#filtro-datas.escondido {
-  display: none;
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
 }
 
 .escondido {
   display: none !important;
 }
 
-<<<<<<< HEAD
 .linha-datas {
   display: flex;
   gap: 16px;
@@ -626,111 +580,4 @@ button#cancelar-filtro:hover {
   opacity: 1;
   transform: translateY(0);
   overflow: visible;
-=======
-#filtro-datas label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-#filtro-datas input[type="date"] {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 100%;
-  color: #555;
-  outline: none;
-  box-sizing: border-box;
-}
-
-#filtro-datas input[type="date"]:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-/* Linha das datas */
-.linha-datas {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.linha-datas > div {
-  flex: 1 1 45%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Botões do filtro */
-#botoes-filtro {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 10px;
-}
-
-#cancelar-filtro {
-  background-color: #dc3545;
-  color: white;
-  border-radius: 6px;
-  padding: 10px 30px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  border: none;
-  transition: background-color 0.3s ease;
-}
-
-#cancelar-filtro:hover {
-  background-color: #a71d2a;
-}
-
-#aplicar-filtro {
-  background-color: #ffc107;
-  color: #333;
-  border-radius: 6px;
-  padding: 10px 30px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: bold;
-  border: none;
-  transition: background-color 0.3s ease;
-}
-
-#aplicar-filtro:hover {
-  background-color: #d39e00;
-}
-
-/* ====== Ajustes mobile ====== */
-@media (max-width: 600px) {
-  form {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  #container-botoes {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  #container-botoes button {
-    min-width: 100%;
-  }
-
-  .linha-datas {
-    flex-direction: column;
-  }
-
-  .linha-datas > div {
-    width: 100%;
-  }
-
-  #filtro-datas {
-    max-width: 90vw;
-  }
->>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
 }
