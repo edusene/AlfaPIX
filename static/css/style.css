@@ -1,3 +1,4 @@
+/* ====== Body e estrutura básica ====== */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f4f7fa;
@@ -7,6 +8,7 @@ body {
   padding: 40px 20px;
 }
 
+/* ====== Títulos ====== */
 h1 {
   color: #0077cc;
   font-size: 2.5em;
@@ -14,6 +16,7 @@ h1 {
   animation: slideIn 1s ease-out;
 }
 
+/* ====== Formulário ====== */
 form {
   background: #fff;
   padding: 20px 30px;
@@ -23,6 +26,7 @@ form {
   gap: 10px;
   align-items: center;
   animation: fadeIn 1s ease;
+  margin-bottom: 30px; /* Afastar dos botões */
 }
 
 input[type="number"] {
@@ -32,6 +36,7 @@ input[type="number"] {
   width: 120px;
 }
 
+/* ====== Botões padrão ====== */
 button {
   padding: 8px 16px;
   border: none;
@@ -39,12 +44,19 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  font-family: sans-serif, "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji";
 }
 
 button:hover {
   transform: translateY(-3px);
 }
 
+button::before,
+button::after {
+  vertical-align: middle;
+}
+
+/* ====== Botões coloridos ====== */
 .btn-azul { background-color: #0077cc; }
 .btn-verde { background-color: #28a745; }
 .btn-vermelho { background-color: #e74c3c; }
@@ -55,8 +67,8 @@ button:hover {
 .btn-vermelho:hover { background-color: #c0392b; }
 .btn-cinza:hover { background-color: #5a6268; }
 
+/* ====== Resultado e QR Code ====== */
 #resultado {
-  margin-top: 30px;
   text-align: center;
   display: none;
 }
@@ -73,6 +85,7 @@ button:hover {
   transform: scale(1.1);
 }
 
+/* ====== Status e alertas ====== */
 #status {
   font-weight: bold;
   margin-top: 15px;
@@ -105,6 +118,7 @@ button:hover {
   border: 1px solid #f5c6cb;
 }
 
+/* ====== Notificação pagamento ====== */
 #notificacao-pagamento {
   position: fixed;
   top: 20px;
@@ -125,58 +139,85 @@ button:hover {
 #notificacao-pagamento.show {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(20px); /* Ajuste no transform para garantir a centralização */
+  transform: translateX(-50%) translateY(20px);
 }
 
-/* Container da lista */
+/* ====== Container de botões ====== */
+#container-botoes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* evita quebra da linha */
+  margin: 20px 0;
+}
+
+#container-botoes button,
+#ocultar-lista,
+#visualizar-lista,
+#abrir-filtro {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 200px;      /* aumentar para garantir espaço */
+  max-width: 220px;      /* limitar máximo para não crescer demais */
+  white-space: nowrap;   /* evita quebra de texto */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transition: background-color 0.3s ease;
+  /* remover flex para largura fixa */
+}
+
+#container-botoes button:hover,
+#ocultar-lista:hover,
+#visualizar-lista:hover {
+  background-color: #0056b3;
+}
+
+/* Cor específica para o botão Filtrar */
+#abrir-filtro {
+  background-color: #ffc107;
+  color: #333;
+  /* manter o flex para consistência */
+  flex: 1 1 180px;
+  max-width: 240px;
+}
+
+#abrir-filtro:hover {
+  background-color: #d39e00;
+}
+
+/* ====== Lista ====== */
 #container-lista {
   margin-top: 30px;
   max-width: 400px;
 }
 
-/* Botões ocultar/visualizar */
-#ocultar-lista, #visualizar-lista {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  user-select: none;
-  transition: background-color 0.3s ease;
-  margin-bottom: 10px;
-  margin-right: 10px;
-  display: inline-block;
-  vertical-align: middle;
-  min-width: 120px;
-}
-
-#ocultar-lista:hover, #visualizar-lista:hover {
-  background-color: #357abd;
-}
-
-/* Lista geral */
 #lista-pix {
   background: #fff;
   border-radius: 8px;
   margin-top: 4px;
   border: 1px solid #ddd;
   overflow: hidden;
-  max-height: 1000px;
+  max-height: none;
   padding: 12px 16px;
-  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
   opacity: 1;
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.07);
-
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
 }
 
-/* Esconder lista */
 #lista-pix.escondido {
   max-height: 0;
   opacity: 0;
@@ -186,47 +227,53 @@ button:hover {
   pointer-events: none;
 }
 
-/* Título da lista */
 #lista-pix > h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
+  margin: 0 0 12px;
   font-weight: 700;
   font-size: 18px;
   color: #333;
 }
 
-/* Área da UL — centralizar */
 #historico-pix {
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
+  line-height: normal;
+  font-size: 1rem;
 }
 
-/* Cada item da lista */
+/* ====== Itens da lista estilo box notificação/comprovante ====== */
 #historico-pix li {
-  list-style: none;
-  background: #f9f9f9;
-  padding: 14px 20px;         /* Mais espaço interno */
-  margin-bottom: 12px;
-  border-radius: 14px;        /* Bordas arredondadas maiores */
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 18px 24px;
+  margin-bottom: 16px; /* espaçamento entre as boxes */
   display: flex;
   flex-direction: column;
-  gap: 8px;                   /* Espaço entre os elementos internos */
-  width: 90%;
-  max-width: 360px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* sombra mais suave e leve */
+  gap: 8px;
+  font-size: 1rem;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: background-color 0.3s ease;
-  cursor: default;
 }
 
 #historico-pix li:hover {
-  background-color: #e6f0ff;
+  background-color: #e3f7ff;
 }
 
-/* Linha superior: nome e valor alinhados */
+/* Estilos individuais dentro do item */
+#historico-pix li .pagamento-nome,
+#historico-pix li .pagamento-data,
+#historico-pix li .pagamento-valor {
+  display: block;
+  font-weight: 600;
+  color: #222;
+}
+
 #historico-pix li > span {
   font-weight: 600;
   font-size: 15px;
@@ -235,56 +282,25 @@ button:hover {
   justify-content: space-between;
 }
 
-/* Valor em fonte monoespaçada para alinhamento */
 #historico-pix li > span strong {
   font-family: 'Courier New', Courier, monospace;
   color: #007bff;
 }
 
-/* Animação de fade na lista */
-#lista-pix,
-#lista-pix.escondido {
-  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease;
-}
-
+/* ====== Animações ====== */
 @keyframes slideIn {
-  0% {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  0% { transform: translateY(-30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes fadeAlert {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
 @keyframes pulse {
@@ -297,23 +313,18 @@ button:hover {
   animation: pulse 1s infinite;
 }
 
+/* ====== Logo principal ====== */
 .logo-principal {
   width: 70%;
   max-width: 280px;
   height: auto;
   margin: -30px -40px;
-  animation: fadeInLogo 1s ease-out;  /* Animação mais rápida */
+  animation: fadeIn 1s ease-out;
 }
 
-@keyframes fadeInLogo {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px) {
@@ -322,4 +333,251 @@ button:hover {
     max-width: 240px;
     margin: -20px -30px;
   }
+}
+
+/* ====== Filtro de datas ====== */
+#filtro-datas {
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 12px 22px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 20px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
+}
+
+.escondido {
+  display: none !important;
+}
+
+.linha-datas {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.linha-datas div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.linha-datas label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.linha-datas input[type="date"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 140px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #444;
+}
+
+#botoes-filtro {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+/* ====== Lista de pagamentos (Tabela) ====== */
+#lista-pix table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+#lista-pix th,
+#lista-pix td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+#lista-pix thead {
+  background-color: #0077cc;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 12px 12px 0 0;
+}
+
+#contador-registros {
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: #666;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ====== Estilo para itens da lista estilo comprovante com emojis ====== */
+#historico-pix li {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  color: #333;
+  transition: background-color 0.25s ease;
+  font-family: 'Segoe UI Emoji', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#historico-pix li:hover {
+  background-color: #e6f4ff;
+}
+
+/* Nome com emoji de pessoa */
+.pagamento-nome {
+  color: #0077cc;
+}
+
+.pagamento-data {
+  color: #555;
+  font-size: 0.9em;
+}
+
+.pagamento-valor {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+
+/* Mantendo emojis nas versões desktop */
+.pagamento-nome::before {
+  content: "👤 ";
+}
+.pagamento-data::before {
+  content: "📅 ";
+}
+.pagamento-valor::before {
+  content: "💰 ";
+}
+
+/* Valor com emoji de dinheiro */
+.pagamento-valor {
+  font-weight: 700;
+  color: #28a745;
+  white-space: nowrap;
+  justify-self: end;
+}
+.pagamento-valor::before {
+  content: "💰 ";
+}
+
+/* Ajuste mobile */
+@media (max-width: 480px) {
+  #historico-pix li {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 16px;
+  }
+  .pagamento-nome::before,
+  .pagamento-data::before,
+  .pagamento-valor::before {
+    content: ""; /* Remove emojis no mobile para mais espaço */
+  }
+  .pagamento-valor {
+    justify-self: start;
+    color: #2a7a2a;
+  }
+}
+
+/* ====== Botões aplicar e cancelar cores originais ====== */
+button#aplicar-filtro {
+  background-color: #ffc107; /* amarelo */
+  color: #333;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 10px 18px;
+  min-width: 140px;
+  transition: background-color 0.3s ease;
+}
+button#aplicar-filtro:hover {
+  background-color: #d39e00;
+  color: white;
+}
+
+button#cancelar-filtro {
+  background-color: #e74c3c; /* vermelho */
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 10px 18px;
+  min-width: 140px;
+  transition: background-color 0.3s ease;
+}
+button#cancelar-filtro:hover {
+  background-color: #c0392b;
+}
+
+.lista-comprovantes > div {
+  background-color: #f9f6f1; /* bege clarinho */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  transition: box-shadow 0.25s ease;
+}
+
+.lista-comprovantes > div:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.lista-comprovantes > div .topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 17px;
+  color: #4a403a;
+}
+
+.lista-comprovantes > div .valor {
+  color: #bb8f00; /* amarelo elegante */
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.lista-comprovantes > div .data {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #777;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Preparar animação para lista e filtro */
+#lista-pix,
+#filtro-datas {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-10px);
+  transition: max-height 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Quando visível, max-height grande e opacidade 1 */
+#lista-pix.ativo,
+#filtro-datas.ativo {
+  max-height: 1000px; /* valor alto para acomodar o conteúdo */
+  opacity: 1;
+  transform: translateY(0);
+  overflow: visible;
 }

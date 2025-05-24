@@ -39,7 +39,7 @@ response = requests.post(
 if response.status_code == 200:
     token_data = response.json()
     print("✅ Access Token obtido com sucesso:")
-    print(token_data['access_token'])
+    #print(token_data['access_token'])
 else:
     print("❌ Erro ao obter token:", response.status_code)
     print(response.text)

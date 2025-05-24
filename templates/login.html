@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - alfaPIX</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+
+<div class="login-container">
+    <h1>alfaPIX 🚀</h1>
+    <form method="POST">
+        {% if erro %}
+            <div class="erro">{{ erro }}</div>
+        {% endif %}
+        <input type="text" name="usuario" placeholder="Usuário" required>
+        <input type="password" name="senha" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='js/login.js') }}"></script> <!-- opcional -->
+</body>
+</html>

@@ -1,6 +1,13 @@
-# config.py
 import os
+from dotenv import load_dotenv
 
+# Carrega as variáveis do arquivo .env, se estiver em desenvolvimento local
+load_dotenv()
+
+# Verifica o ambiente (pode ser "production" ou "development")
+ENV = os.getenv("FLASK_ENV", "development")  # Por padrão, assume que é desenvolvimento
+
+# Configurações de SICOOB
 SICOOB_CLIENT_ID = '6b5b1caf-76ce-4e60-8169-ba7066b30840'
 SICOOB_BASE_URL = 'https://api.sicoob.com.br/pix/api/v2'
 SICOOB_PIX_URL = f'{SICOOB_BASE_URL}/pix'
@@ -26,11 +33,25 @@ if SSL_CERT and SSL_KEY:
 
     SICOOB_CERT_PATH = cert_path
     SICOOB_KEY_PATH = key_path
-
 else:
     # Caso local, usa os arquivos .pem locais
     SICOOB_CERT_PATH = 'certificado.pem'
     SICOOB_KEY_PATH = 'chave.pem'
+
+# Configurações do Supabase
+if ENV == "development":
+    # Se for desenvolvimento, carrega o Supabase a partir do .env
+    SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://localhost:8000')  # URL local para testes
+    SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', 'dev-local-token')  # Token local para testes
+else:
+    # Em produção (Fly.io), usa as variáveis de ambiente configuradas no Fly.io
+    SUPABASE_URL = os.environ.get('SUPABASE_URL')  # Deveria estar configurado no Fly.io
+    SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')  # Deveria estar configurado no Fly.io
+
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        raise ValueError("As variáveis de ambiente do Supabase não estão configuradas no Fly.io!")
+
+
 
 '''
 SICOOB_CLIENT_ID = '6b5b1caf-76ce-4e60-8169-ba7066b30840'
