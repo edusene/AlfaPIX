@@ -38,7 +38,6 @@ function mostrarNotificacao(msg) {
 
 // 📜 Converte string "YYYY-MM-DD HH:mm:ss" para objeto Date local
 function parseDateLocal(str) {
-<<<<<<< HEAD
   const [datePart, timePart] = str.split(' ');
   if (!datePart || !timePart) return new Date(NaN);
 
@@ -48,12 +47,6 @@ function parseDateLocal(str) {
   return new Date(year, month - 1, day, hour, minute, second);
 }
 
-=======
-  // troca espaço por 'T' para formato ISO aceito pelo JS, já em horário local
-  return new Date(str.replace(' ', 'T'));
-}
-
->>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 // Atualiza a lista de pagamentos exibida na tela
 function atualizarHistorico(pagamentos) {
   const container = document.getElementById('lista-pagamentos');
@@ -67,11 +60,7 @@ function atualizarHistorico(pagamentos) {
     container.innerHTML = '';
 
     if (!pagamentos || pagamentos.length === 0) {
-<<<<<<< HEAD
       container.innerHTML = `<p class="nenhum-pagamento">Nenhum pagamento encontrado.</p>`;
-=======
-      container.innerHTML = `<p>Nenhum pagamento encontrado.</p>`;
->>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
       const contador = document.getElementById('contador-registros');
       if (contador) contador.textContent = 'Total de registros: 0';
 
@@ -108,7 +97,6 @@ function carregarHistorico(inicio = '', fim = '') {
   const url = `/historico?inicio=${encodeURIComponent(inicio)}&fim=${encodeURIComponent(fim)}`;
 
   fetch(url)
-<<<<<<< HEAD
   .then(res => {
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     return res.json();
@@ -124,22 +112,10 @@ function carregarHistorico(inicio = '', fim = '') {
     console.error('❌ Erro ao carregar histórico:', err);
     mostrarAlerta('Erro ao carregar histórico.', 'error');
   });
-=======
-    .then(res => res.json())
-    .then(data => {
-      console.log('📜 Histórico recebido:', data);
-      atualizarHistorico(data);
-    })
-    .catch(err => {
-      console.error('❌ Erro ao carregar histórico:', err);
-      mostrarAlerta('Erro ao carregar histórico.', 'error');
-    });
->>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 }
 
 // 💾 Salva pagamento no histórico via POST
 function salvarNoHistorico(nome, valor) {
-<<<<<<< HEAD
   const dataHora = new Date().toISOString(); // Gera data atual no formato correto
 
   return fetch('/salvar-historico', {
@@ -156,19 +132,6 @@ function salvarNoHistorico(nome, valor) {
   });
 }
 
-=======
-  return fetch('/salvar-historico', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nome, valor })
-  })
-  .then(res => {
-    if (!res.ok) throw new Error('Erro ao salvar no histórico.');
-    console.log('✅ Histórico salvo');
-  });
-}
-
->>>>>>> 7aea045871e8189140581e64c913ef1d7758965c
 // 🔍 Verifica status do pagamento e atualiza UI
 function verificarPagamento() {
   const txid = $('#txid').val();
