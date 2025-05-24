@@ -21,6 +21,16 @@
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<<<<<<< HEAD
+=======
+
+    <!-- Inicializando o Supabase com as variáveis passadas pelo Flask -->
+    <script>
+      window.supabase = supabase.createClient('{{ SUPABASE_URL }}', '{{ SUPABASE_ANON_KEY }}');
+  </script>
+
+  <!-- Incluindo o seu script.js -->
+>>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </head>
@@ -58,6 +68,7 @@
     <p id="status"></p>
   </div>
 
+<<<<<<< HEAD
   <!-- Botões superiores -->
   <div id="container-botoes">
     <button id="ocultar-lista">📥 Ocultar Pagamentos</button>
@@ -80,6 +91,45 @@
     <div id="botoes-filtro">
       <button id="aplicar-filtro" type="button">Aplicar</button>
       <button id="cancelar-filtro" type="button">Cancelar</button>
+=======
+  <div id="container-botoes">
+    <button id="ocultar-lista">
+      📥 Ocultar Pagamentos
+    </button>
+  
+    <button id="visualizar-lista" style="display: none;">
+      📤 Visualizar Pagamentos
+    </button>
+  
+    <button id="abrir-filtro">
+      🔍 Filtrar
+    </button> 
+    </div>
+    
+    <!-- Caixa do filtro -->
+    <div id="filtro-datas" class="escondido">
+      <div class="linha-datas">
+        <div>
+          <label for="data-inicio">Data Início:</label>
+          <input type="date" id="data-inicio" name="data-inicio" />
+        </div>
+    
+        <div>
+          <label for="data-fim">Data Fim:</label>
+          <input type="date" id="data-fim" name="data-fim" />
+        </div>
+      </div>    
+    
+      <div id="botoes-filtro">
+        <button id="aplicar-filtro" type="button">Aplicar</button>
+        <button id="cancelar-filtro" type="button">Cancelar</button>
+      </div>
+    </div>
+                 
+  
+    <div id="lista-pix">
+      <ul id="historico-pix"></ul>
+>>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
     </div>
   </div>
 

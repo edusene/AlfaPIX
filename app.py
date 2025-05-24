@@ -82,6 +82,7 @@ def logout():
 
 @app.route('/')
 def index():
+<<<<<<< HEAD
     if 'usuario' not in session:
         return redirect(url_for('login'))
 
@@ -168,6 +169,11 @@ def historico_hoje():
 # ===========================
 # PIX - COBRANÇA E VERIFICAÇÃO
 # ===========================
+=======
+    return render_template('index.html', 
+                           SUPABASE_URL=SUPABASE_URL, 
+                           SUPABASE_ANON_KEY=SUPABASE_ANON_KEY)
+>>>>>>> 89342013ec643a72b90a72196e07d8c14d340dca
 
 @app.route('/cobrar', methods=['POST'])
 def cobrar():
