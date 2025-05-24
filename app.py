@@ -86,6 +86,20 @@ def historico():
     inicio_str = request.args.get('inicio')
     fim_str = request.args.get('fim')
 
+    # Para pegar o usuário da sessão e checar modo_visualizacao aqui
+    usuario = session.get('usuario')
+    modo_visualizacao = (usuario == 'teste')
+
+    if modo_visualizacao:
+        # Retorna dados exemplo fixos, ignorando as datas
+        exemplo = [
+            {'nome': 'Cliente Exemplo 1', 'valor': 100.00, 'dataHora': '24/05/2025 12:00:00'},
+            {'nome': 'Cliente Exemplo 2', 'valor': 250.50, 'dataHora': '23/05/2025 15:30:10'},
+            {'nome': 'Cliente Exemplo 3', 'valor': 75.30, 'dataHora': '22/05/2025 09:45:33'}
+        ]
+        return jsonify(exemplo)
+
+    # Se não for modo visualizacao, segue código original abaixo:
     try:
         inicio = datetime.strptime(inicio_str, '%Y-%m-%d %H:%M:%S')
         fim = datetime.strptime(fim_str, '%Y-%m-%d %H:%M:%S')
@@ -108,14 +122,9 @@ def historico():
 
         resultado = []
         for p in registros:
-            iso_str = p['dataHora']  # exemplo: '2025-05-24T21:28:54.941+00:00'
-            # Converter para datetime com timezone (UTC)
+            iso_str = p['dataHora']
             dt_utc = parser.parse(iso_str)
-
-            # Converter para horário de Cuiabá
             dt_cuiaba = dt_utc.astimezone(ZoneInfo('America/Cuiaba'))
-
-            # Formatar para string legível
             datahora_formatada = dt_cuiaba.strftime('%d/%m/%Y %H:%M:%S')
 
             resultado.append({
@@ -131,24 +140,6 @@ def historico():
         traceback.print_exc()
         return jsonify({'error': 'Erro interno no servidor'}), 500
 
-@app.route('/historico-tudo')
-def historico_tudo():
-    try:
-        response = supabase \
-            .from_('historico_pagamentos') \
-            .select('id, nome, valor, dataHora') \
-            .order('dataHora', desc=True) \
-            .execute()
-
-        if response.error:
-            raise Exception(response.error.message)
-
-        lista = rows_to_list(response.data)
-        return jsonify(lista), 200
-
-    except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
 
 @app.route('/historico-hoje')
 def historico_hoje():
