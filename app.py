@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 import traceback
 import os
 
+load_dotenv()  # Carrega variáveis do .env
+
 from zoneinfo import ZoneInfo
 from dateutil import parser
 
@@ -29,12 +31,6 @@ FUSO = timedelta(hours=-4)
 def now_fixed_offset():
     return datetime.utcnow() + FUSO
 
-# Usuários autorizados (idealmente carregar de ambiente ou arquivo seguro)
-USUARIOS = {
-    'ALFA': '3551',
-    'teste': '1234'
-}
-
 app = Flask(__name__)
 # Ideal: usar variável de ambiente para secret_key em produção
 app.secret_key = os.getenv('FLASK_SECRET_KEY', '15112020')
@@ -47,6 +43,28 @@ def rows_to_list(rows):
 # ===========================
 # ROTAS
 # ===========================
+
+ENV = os.environ.get('ENV', 'production')
+
+# Credenciais DEMO
+USER_DEMO = os.environ.get('DEMO_USER')
+PASS_DEMO = os.environ.get('DEMO_PASS')
+
+if not USER_DEMO or not PASS_DEMO:
+    print("⚠️ Aviso: Credenciais DEMO não configuradas.")
+
+# Credenciais PROD
+USER = os.environ.get('USER')
+PASS = os.environ.get('PASS')
+
+if not USER or not PASS:
+    raise ValueError("❌ As variáveis de ambiente USER e PASS não estão configuradas corretamente!")
+
+# Dicionário de usuários válido para login
+USUARIOS = {
+    USER: PASS,
+    USER_DEMO: PASS_DEMO
+}
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -63,10 +81,12 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     session.pop('usuario', None)
     return redirect(url_for('login'))
+
 
 @app.route('/')
 def index():
@@ -74,7 +94,8 @@ def index():
         return redirect(url_for('login'))
 
     usuario = session.get('usuario')
-    modo_visualizacao = (usuario == 'teste')
+    modo_visualizacao = (usuario == USER_DEMO)
+
     return render_template('index.html', modo_visualizacao=modo_visualizacao)
 
 # ===========================

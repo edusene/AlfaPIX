@@ -11,7 +11,6 @@ ENV = os.getenv("FLASK_ENV", "development")  # Por padrão, assume que é desenv
 SICOOB_CLIENT_ID = '6b5b1caf-76ce-4e60-8169-ba7066b30840'
 SICOOB_BASE_URL = 'https://api.sicoob.com.br/pix/api/v2'
 SICOOB_PIX_URL = f'{SICOOB_BASE_URL}/pix'
-SICOOB_WEBHOOK_URL = 'https://seuservidor.com/webhook'
 
 # Pega os certificados dos secrets do Fly.io via variáveis de ambiente
 SSL_CERT = os.environ.get('SSL_CERT')
@@ -50,14 +49,20 @@ else:
 
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         raise ValueError("As variáveis de ambiente do Supabase não estão configuradas no Fly.io!")
+    
+# Configurações do ambiente
+ENV = os.environ.get('ENV', 'production')
 
+# Carrega credenciais do usuário DEMO
+USER_DEMO = os.environ.get('DEMO_USER')
+PASS_DEMO = os.environ.get('DEMO_PASS')
 
+if not USER_DEMO or not PASS_DEMO:
+    print("⚠️ Aviso: Credenciais DEMO não configuradas.")
 
-'''
-SICOOB_CLIENT_ID = '6b5b1caf-76ce-4e60-8169-ba7066b30840'
-SICOOB_BASE_URL = 'https://api.sicoob.com.br/pix/api/v2'
-SICOOB_PIX_URL = f'{SICOOB_BASE_URL}/pix'
-SICOOB_CERT_PATH = 'certificado.pem'
-SICOOB_KEY_PATH = 'chave.pem'
-SICOOB_WEBHOOK_URL = 'https://seuservidor.com/webhook'
-'''
+# Carrega credenciais do usuário principal
+USER = os.environ.get('USER')
+PASS = os.environ.get('PASS')
+
+if not USER or not PASS:
+    raise ValueError("❌ As variáveis de ambiente USER e PASS não estão configuradas corretamente!")
